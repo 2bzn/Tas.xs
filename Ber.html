@@ -2,386 +2,137 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Quantum Task Nexus</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+    <title>Task Manager</title>
     <style>
-        :root {
-            --quantum-bg-primary: #0a0a1a;
-            --quantum-bg-secondary: #111229;
-            --quantum-text-primary: #e6e6f0;
-            --quantum-text-secondary: #8888a2;
-            --quantum-accent-blue: #3498db;
-            --quantum-accent-green: #2ecc71;
-            --quantum-accent-red: #e74c3c;
-            --quantum-accent-purple: #8e44ad;
-        }
-
-        * {
-            box-sizing: border-box;
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-        }
-
         body {
-            background: radial-gradient(
-                ellipse at bottom, 
-                var(--quantum-bg-primary) 0%, 
-                var(--quantum-bg-secondary) 100%
-            );
-            color: var(--quantum-text-primary);
-            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-            min-height: 100vh;
-            overflow-x: hidden;
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
         }
-
-        .quantum-container {
-            background: rgba(17, 18, 41, 0.85);
-            border-radius: 25px;
-            backdrop-filter: blur(20px);
-            box-shadow: 
-                0 20px 50px rgba(0,0,0,0.4),
-                0 0 100px rgba(57, 60, 134, 0.2);
-            border: 1px solid rgba(255,255,255,0.05);
-            max-width: 1100px;
-            margin: 50px auto;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .quantum-container::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(
-                circle at center, 
-                rgba(57, 60, 134, 0.1) 0%, 
-                transparent 70%
-            );
-            animation: cosmic-pulse 10s infinite alternate;
-        }
-
-        @keyframes cosmic-pulse {
-            0% { transform: scale(0.95); opacity: 0.8; }
-            100% { transform: scale(1.05); opacity: 1; }
-        }
-
-        .task-input-wrapper {
-            position: relative;
-            margin-bottom: 30px;
-        }
-
-        .task-input {
-            background: rgba(30, 30, 60, 0.6);
-            border: 2px solid rgba(57, 60, 134, 0.3);
-            color: var(--quantum-text-primary);
-            border-radius: 20px;
-            padding: 15px 70px 15px 25px;
-            font-size: 16px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
-
-        .task-input:focus {
-            border-color: var(--quantum-accent-blue);
-            box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.2);
-        }
-
-        .add-task-btn {
-            position: absolute;
-            right: 8px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: linear-gradient(145deg, var(--quantum-accent-blue), var(--quantum-accent-purple));
-            border: none;
-            color: white;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-        }
-
-        .task-list {
-            max-height: 550px;
-            overflow-y: auto;
-            padding-right: 15px;
-            scrollbar-width: thin;
-            scrollbar-color: rgba(57, 60, 134, 0.5) transparent;
-        }
-
-        .task-item {
-            background: rgba(30, 30, 60, 0.5);
-            border-left: 6px solid;
-            margin-bottom: 15px;
-            padding: 18px;
-            border-radius: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .task-item::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(
-                45deg, 
-                transparent, 
-                rgba(255,255,255,0.05), 
-                transparent
-            );
-            transform: translateX(-100%);
-            transition: 0.5s;
-        }
-
-        .task-item:hover::before {
-            transform: translateX(100%);
-        }
-
-        .task-item:hover {
-            transform: scale(1.02);
-            box-shadow: 0 12px 35px rgba(0,0,0,0.3);
-        }
-
-        .task-actions {
-            display: flex;
-            align-items: center;
-        }
-
-        .task-actions button {
-            background: transparent;
-            border: none;
-            color: var(--quantum-text-secondary);
-            margin-left: 15px;
-            transition: all 0.3s ease;
-        }
-
-        .task-actions button:hover {
-            transform: scale(1.3) rotate(5deg);
-            color: var(--quantum-text-primary);
-        }
-
-        .priority-badge {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
+        #taskInput {
+            width: 70%;
+            padding: 10px;
             margin-right: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.3);
         }
-
-        .priority-low { background-color: var(--quantum-accent-blue); }
-        .priority-medium { background-color: #f1c40f; }
-        .priority-high { background-color: var(--quantum-accent-red); }
-
-        .task-filters .btn {
-            background: rgba(30, 30, 60, 0.5);
-            color: var(--quantum-text-secondary);
-            border: none;
-            margin: 0 5px;
-            transition: all 0.3s ease;
+        #taskList {
+            list-style-type: none;
+            padding: 0;
         }
-
-        .task-filters .btn.active {
-            background: linear-gradient(145deg, var(--quantum-accent-blue), var(--quantum-accent-purple));
-            color: white;
-            transform: scale(1.05);
-        }
-
-        @keyframes taskFadeIn {
-            from { 
-                opacity: 0; 
-                transform: translateY(-20px);
-            }
-            to { 
-                opacity: 1; 
-                transform: translateY(0);
-            }
-        }
-
         .task-item {
-            animation: taskFadeIn 0.4s ease;
+            background-color: white;
+            margin: 10px 0;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-
-        /* Responsive Adjustments */
-        @media (max-width: 768px) {
-            .quantum-container {
-                margin: 20px 10px;
-                padding: 20px;
-            }
-
-            .task-item {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .task-actions {
-                width: 100%;
-                justify-content: flex-end;
-                margin-top: 10px;
-            }
+        .completed {
+            text-decoration: line-through;
+            color: gray;
+        }
+        .delete-btn {
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
-    <div class="container quantum-container">
-        <div class="row">
-            <div class="col-12">
-                <h1 class="text-center mb-4 text-gradient">
-                    <i class="fas fa-meteor me-2"></i>Quantum Task Nexus
-                </h1>
-
-                <div class="task-input-wrapper">
-                    <input 
-                        type="text" 
-                        id="taskInput" 
-                        class="form-control task-input" 
-                        placeholder="Quantum mission details..."
-                        aria-label="New Task"
-                    >
-                    <button 
-                        id="addTaskBtn" 
-                        class="btn add-task-btn" 
-                        aria-label="Add Task"
-                    >
-                        <i class="fas fa-plus"></i>
-                    </button>
-                </div>
-
-                <div class="task-filters text-center mb-3">
-                    <div class="btn-group" role="group">
-                        <button class="btn active" data-filter="all">
-                            <i class="fas fa-galaxy me-1"></i>All Missions
-                        </button>
-                        <button class="btn" data-filter="active">
-                            <i class="fas fa-rocket me-1"></i>Active
-                        </button>
-                        <button class="btn" data-filter="completed">
-                            <i class="fas fa-check-circle me-1"></i>Completed
-                        </button>
-                    </div>
-                </div>
-
-                <div id="taskList" class="task-list"></div>
-
-                <div class="task-stats text-center mt-3">
-                    <span id="totalTasks" class="me-3">
-                        <i class="fas fa-clipboard-list me-1"></i>0 Missions
-                    </span>
-                    <span id="completedTasks">
-                        <i class="fas fa-check-double me-1"></i>0 Accomplished
-                    </span>
-                </div>
-            </div>
-        </div>
+    <h1>Task Manager</h1>
+    
+    <div>
+        <input type="text" id="taskInput" placeholder="Enter a new task">
+        <button onclick="addTask()">Add Task</button>
     </div>
+    
+    <ul id="taskList"></ul>
 
     <script>
-        class QuantumTaskNexus {
-            constructor() {
-                this.tasks = [];
-                this.initializeEventListeners();
-                this.loadTasks();
+        // Load tasks from localStorage on page load
+        document.addEventListener('DOMContentLoaded', loadTasks);
+
+        function addTask() {
+            const taskInput = document.getElementById('taskInput');
+            const taskText = taskInput.value.trim();
+
+            if (taskText) {
+                // Create task object
+                const task = {
+                    id: Date.now(),
+                    text: taskText,
+                    completed: false
+                };
+
+                // Add task to list
+                renderTask(task);
+
+                // Save to localStorage
+                saveTask(task);
+
+                // Clear input
+                taskInput.value = '';
             }
-
-            initializeEventListeners() {
-                const addTaskBtn = document.getElementById('addTaskBtn');
-                const taskInput = document.getElementById('taskInput');
-                const filterButtons = document.querySelectorAll('.task-filters .btn');
-
-                addTaskBtn.addEventListener('click', () => this.addTask());
-                taskInput.addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') this.addTask();
-                });
-
-                filterButtons.forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        filterButtons.forEach(b => b.classList.remove('active'));
-                        btn.classList.add('active');
-                        this.filterTasks(btn.dataset.filter);
-                    });
-                });
-            }
-
-            addTask() {
-                const taskInput = document.getElementById('taskInput');
-                const taskText = taskInput.value.trim();
-
-                if (taskText) {
-                    const task = {
-                        id: Date.now(),
-                        text: taskText,
-                        completed: false,
-                        priority: this.getRandomPriority(),
-                        createdAt: new Date().toISOString(),
-                        tags: this.generateTags(taskText)
-                    };
-
-                    this.tasks.push(task);
-                    this.saveTasks();
-                    this.renderTasks();
-                    taskInput.value = '';
-                }
-            }
-
-            getRandomPriority() {
-                const priorities = ['low', 'medium', 'high'];
-                return priorities[Math.floor(Math.random() * priorities.length)];
-            }
-
-            generateTags(taskText) {
-                const potentialTags = ['urgent', 'important', 'personal', 'work', 'learning'];
-                return potentialTags.filter(() => Math.random() < 0.3);
-            }
-
-            renderTasks() {
-                const taskList = document.getElementById('taskList');
-                const totalTasksEl = document.getElementById('totalTasks');
-                const completedTasksEl = document.getElementById('completedTasks');
-
-                taskList.innerHTML = '';
-                
-                this.tasks.forEach(task => {
-                    const taskElement = document.createElement('div');
-                    taskElement.classList.add('task-item', `priority-${task.priority}`);
-                    taskElement.innerHTML = `
-                        <div class="task-content d-flex align-items-center">
-                            <span class="priority-badge priority-${task.priority}"></span>
-                            <span class="${task.completed ? 'text-muted text-decoration-line-through' : ''}">${task.text}</span>
-                        </div>
-                        <div class="task-actions">
-                            ${task.tags.map(tag => `<span class="badge bg-secondary me-1">${tag}</span>`).join('')}
-                            <button class="btn btn-sm complete-btn" onclick="quantumTaskNexus.toggleComplete(${task.id})">
-                                <i class="fas fa-check"></i>
-                            </button>
-                            <button class="btn btn-sm delete-btn" onclick="quantumTaskNexus.deleteTask(${task.id})">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    `;
-
-                    taskList.appendChild(taskElement);
-                });
-
-                const totalTasks = this.tasks.length;
-                const completedTasks = this.tasks.filter(t => t.completed).length;
-
-                totalTasksEl.innerHTML = `<i class="fas fa-clipboard-list me-1"></i>${totalTasks} Missions`;
-                completedTasksEl.innerHTML = `<i class="fas fa-check-double me-1"></i>${completedTasks} Accomplished`;
-            }
-
-            // Remaining methods (toggleComplete, deleteTask, filterTasks, saveTasks, loadTasks) 
-            // would be similar to previous implementations
         }
 
-        const quantumTaskNexus = new QuantumTaskNexus();
+        function renderTask(task) {
+            const taskList = document.getElementById('taskList');
+            const li = document.createElement('li');
+            li.className = 'task-item';
+            li.id = `task-${task.id}`;
+            
+            li.innerHTML = `
+                <span class="${task.completed ? 'completed' : ''}" 
+                      onclick="toggleComplete(${task.id})">
+                    ${task.text}
+                </span>
+                <button class="delete-btn" onclick="deleteTask(${task.id})">Delete</button>
+            `;
+
+            taskList.appendChild(li);
+        }
+
+        function saveTask(task) {
+            let tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+            tasks.push(task);
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+        }
+
+        function loadTasks() {
+            const tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+            tasks.forEach(renderTask);
+        }
+
+        function toggleComplete(taskId) {
+            let tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+            const taskIndex = tasks.findIndex(t => t.id === taskId);
+            
+            if (taskIndex !== -1) {
+                tasks[taskIndex].completed = !tasks[taskIndex].completed;
+                localStorage.setItem('tasks', JSON.stringify(tasks));
+
+                const taskElement = document.getElementById(`task-${taskId}`);
+                const textSpan = taskElement.querySelector('span');
+                textSpan.classList.toggle('completed');
+            }
+        }
+
+        function deleteTask(taskId) {
+            // Remove from DOM
+            const taskElement = document.getElementById(`task-${taskId}`);
+            taskElement.remove();
+
+            // Remove from localStorage
+            let tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+            tasks = tasks.filter(t => t.id !== taskId);
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+        }
     </script>
 </body>
 </html>
+
 
