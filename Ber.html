@@ -2,44 +2,70 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Quantum Task Manager</title>
+    <title>Quantum Task Nexus</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
     <style>
         :root {
-            --dark-bg-primary: #121212;
-            --dark-bg-secondary: #1E1E1E;
-            --dark-text-primary: #E0E0E0;
-            --dark-text-secondary: #A0A0A0;
-            --accent-color-blue: #3498db;
-            --accent-color-green: #2ecc71;
-            --accent-color-red: #e74c3c;
-            --accent-color-yellow: #f1c40f;
+            --quantum-bg-primary: #0a0a1a;
+            --quantum-bg-secondary: #111229;
+            --quantum-text-primary: #e6e6f0;
+            --quantum-text-secondary: #8888a2;
+            --quantum-accent-blue: #3498db;
+            --quantum-accent-green: #2ecc71;
+            --quantum-accent-red: #e74c3c;
+            --quantum-accent-purple: #8e44ad;
         }
 
         * {
-            transition: all 0.3s ease;
-            scrollbar-width: thin;
-            scrollbar-color: var(--accent-color-blue) var(--dark-bg-secondary);
+            box-sizing: border-box;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
         body {
-            background: linear-gradient(135deg, var(--dark-bg-primary) 0%, var(--dark-bg-secondary) 100%);
-            color: var(--dark-text-primary);
-            font-family: 'Inter', 'Segoe UI', Roboto, system-ui, -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+            background: radial-gradient(
+                ellipse at bottom, 
+                var(--quantum-bg-primary) 0%, 
+                var(--quantum-bg-secondary) 100%
+            );
+            color: var(--quantum-text-primary);
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
             min-height: 100vh;
-            line-height: 1.6;
+            overflow-x: hidden;
         }
 
         .quantum-container {
-            background: rgba(30, 30, 30, 0.8);
-            border-radius: 20px;
-            backdrop-filter: blur(15px);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-            padding: 40px;
-            max-width: 1000px;
+            background: rgba(17, 18, 41, 0.85);
+            border-radius: 25px;
+            backdrop-filter: blur(20px);
+            box-shadow: 
+                0 20px 50px rgba(0,0,0,0.4),
+                0 0 100px rgba(57, 60, 134, 0.2);
+            border: 1px solid rgba(255,255,255,0.05);
+            max-width: 1100px;
             margin: 50px auto;
-            border: 1px solid rgba(255,255,255,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quantum-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(
+                circle at center, 
+                rgba(57, 60, 134, 0.1) 0%, 
+                transparent 70%
+            );
+            animation: cosmic-pulse 10s infinite alternate;
+        }
+
+        @keyframes cosmic-pulse {
+            0% { transform: scale(0.95); opacity: 0.8; }
+            100% { transform: scale(1.05); opacity: 1; }
         }
 
         .task-input-wrapper {
@@ -48,200 +74,216 @@
         }
 
         .task-input {
-            background-color: rgba(50, 50, 50, 0.5);
-            border: 1px solid rgba(255,255,255,0.1);
-            color: var(--dark-text-primary);
-            border-radius: 15px;
-            padding: 15px 60px 15px 20px;
+            background: rgba(30, 30, 60, 0.6);
+            border: 2px solid rgba(57, 60, 134, 0.3);
+            color: var(--quantum-text-primary);
+            border-radius: 20px;
+            padding: 15px 70px 15px 25px;
             font-size: 16px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
 
         .task-input:focus {
-            background-color: rgba(60, 60, 60, 0.7);
-            border-color: var(--accent-color-blue);
-            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3);
+            border-color: var(--quantum-accent-blue);
+            box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.2);
         }
 
         .add-task-btn {
             position: absolute;
-            right: 5px;
+            right: 8px;
             top: 50%;
             transform: translateY(-50%);
-            background-color: var(--accent-color-blue);
+            background: linear-gradient(145deg, var(--quantum-accent-blue), var(--quantum-accent-purple));
             border: none;
             color: white;
             border-radius: 50%;
-            width: 45px;
-            height: 45px;
+            width: 50px;
+            height: 50px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
         }
 
         .task-list {
-            max-height: 500px;
+            max-height: 550px;
             overflow-y: auto;
-            padding-right: 10px;
+            padding-right: 15px;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(57, 60, 134, 0.5) transparent;
         }
 
         .task-item {
-            background-color: rgba(40, 40, 40, 0.6);
+            background: rgba(30, 30, 60, 0.5);
             border-left: 6px solid;
             margin-bottom: 15px;
-            padding: 15px;
-            border-radius: 10px;
+            padding: 18px;
+            border-radius: 15px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .task-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                45deg, 
+                transparent, 
+                rgba(255,255,255,0.05), 
+                transparent
+            );
+            transform: translateX(-100%);
+            transition: 0.5s;
+        }
+
+        .task-item:hover::before {
+            transform: translateX(100%);
         }
 
         .task-item:hover {
-            transform: translateY(-5px);
-            background-color: rgba(50, 50, 50, 0.7);
+            transform: scale(1.02);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.3);
         }
 
-        .task-item.completed {
-            opacity: 0.6;
-            text-decoration: line-through;
+        .task-actions {
+            display: flex;
+            align-items: center;
         }
 
         .task-actions button {
             background: transparent;
             border: none;
-            color: var(--dark-text-secondary);
-            margin-left: 10px;
+            color: var(--quantum-text-secondary);
+            margin-left: 15px;
             transition: all 0.3s ease;
         }
 
         .task-actions button:hover {
-            transform: scale(1.2);
-            color: var(--dark-text-primary);
-        }
-
-        .task-filters .btn {
-            background-color: transparent;
-            color: var(--dark-text-secondary);
-            border-color: rgba(255,255,255,0.1);
-            margin: 0 5px;
-        }
-
-        .task-filters .btn.active {
-            background-color: var(--accent-color-blue);
-            color: white;
+            transform: scale(1.3) rotate(5deg);
+            color: var(--quantum-text-primary);
         }
 
         .priority-badge {
-            width: 10px;
-            height: 10px;
+            width: 12px;
+            height: 12px;
             border-radius: 50%;
             margin-right: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
         }
 
-        .priority-low { background-color: var(--accent-color-blue); }
-        .priority-medium { background-color: var(--accent-color-yellow); }
-        .priority-high { background-color: var(--accent-color-red); }
+        .priority-low { background-color: var(--quantum-accent-blue); }
+        .priority-medium { background-color: #f1c40f; }
+        .priority-high { background-color: var(--quantum-accent-red); }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
+        .task-filters .btn {
+            background: rgba(30, 30, 60, 0.5);
+            color: var(--quantum-text-secondary);
+            border: none;
+            margin: 0 5px;
+            transition: all 0.3s ease;
+        }
+
+        .task-filters .btn.active {
+            background: linear-gradient(145deg, var(--quantum-accent-blue), var(--quantum-accent-purple));
+            color: white;
+            transform: scale(1.05);
+        }
+
+        @keyframes taskFadeIn {
+            from { 
+                opacity: 0; 
+                transform: translateY(-20px);
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0);
+            }
         }
 
         .task-item {
-            animation: fadeIn 0.3s ease;
+            animation: taskFadeIn 0.4s ease;
         }
 
-        /* Custom Scrollbar */
-        .task-list::-webkit-scrollbar {
-            width: 8px;
-        }
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .quantum-container {
+                margin: 20px 10px;
+                padding: 20px;
+            }
 
-        .task-list::-webkit-scrollbar-track {
-            background: var(--dark-bg-secondary);
-        }
+            .task-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
 
-        .task-list::-webkit-scrollbar-thumb {
-            background-color: var(--accent-color-blue);
-            border-radius: 20px;
+            .task-actions {
+                width: 100%;
+                justify-content: flex-end;
+                margin-top: 10px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container quantum-container">
-        <h1 class="text-center mb-4">
-            <i class="fas fa-tasks me-2"></i>Quantum Task Manager
-        </h1>
+        <div class="row">
+            <div class="col-12">
+                <h1 class="text-center mb-4 text-gradient">
+                    <i class="fas fa-meteor me-2"></i>Quantum Task Nexus
+                </h1>
 
-        <div class="task-input-wrapper">
-            <input 
-                type="text" 
-                id="taskInput" 
-                class="form-control task-input" 
-                placeholder="What needs to be done?"
-                aria-label="New Task"
-            >
-            <button 
-                id="addTaskBtn" 
-                class="btn add-task-btn" 
-                aria-label="Add Task"
-            >
-                <i class="fas fa-plus"></i>
-            </button>
-        </div>
-
-        <div class="task-filters text-center mb-3">
-            <div class="btn-group" role="group">
-                <button class="btn btn-outline-primary active" data-filter="all">
-                    <i class="fas fa-list me-1"></i>All
-                </button>
-                <button class="btn btn-outline-primary" data-filter="active">
-                    <i class="fas fa-running me-1"></i>Active
-                </button>
-                <button class="btn btn-outline-primary" data-filter="completed">
-                    <i class="fas fa-check-circle me-1"></i>Completed
-                </button>
-            </div>
-        </div>
-
-        <div id="taskList" class="task-list"></div>
-
-        <div class="task-stats text-center mt-3">
-            <span id="totalTasks" class="me-3">
-                <i class="fas fa-clipboard-list me-1"></i>0 Tasks
-            </span>
-            <span id="completedTasks">
-                <i class="fas fa-check-double me-1"></i>0 Completed
-            </span>
-        </div>
-    </div>
-
-    <!-- Priority Selection Modal -->
-    <div class="modal fade" id="priorityModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content" style="background-color: var(--dark-bg-secondary); color: var(--dark-text-primary);">
-                <div class="modal-header border-0">
-                    <h5 class="modal-title">Select Priority</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                <div class="task-input-wrapper">
+                    <input 
+                        type="text" 
+                        id="taskInput" 
+                        class="form-control task-input" 
+                        placeholder="Quantum mission details..."
+                        aria-label="New Task"
+                    >
+                    <button 
+                        id="addTaskBtn" 
+                        class="btn add-task-btn" 
+                        aria-label="Add Task"
+                    >
+                        <i class="fas fa-plus"></i>
+                    </button>
                 </div>
-                <div class="modal-body">
-                    <div class="priority-selector d-flex justify-content-around">
-                        <button class="btn btn-outline-primary" data-priority="low">
-                            <span class="priority-badge priority-low me-2"></span>Low
+
+                <div class="task-filters text-center mb-3">
+                    <div class="btn-group" role="group">
+                        <button class="btn active" data-filter="all">
+                            <i class="fas fa-galaxy me-1"></i>All Missions
                         </button>
-                        <button class="btn btn-outline-warning" data-priority="medium">
-                            <span class="priority-badge priority-medium me-2"></span>Medium
+                        <button class="btn" data-filter="active">
+                            <i class="fas fa-rocket me-1"></i>Active
                         </button>
-                        <button class="btn btn-outline-danger" data-priority="high">
-                            <span class="priority-badge priority-high me-2"></span>High
+                        <button class="btn" data-filter="completed">
+                            <i class="fas fa-check-circle me-1"></i>Completed
                         </button>
                     </div>
                 </div>
+
+                <div id="taskList" class="task-list"></div>
+
+                <div class="task-stats text-center mt-3">
+                    <span id="totalTasks" class="me-3">
+                        <i class="fas fa-clipboard-list me-1"></i>0 Missions
+                    </span>
+                    <span id="completedTasks">
+                        <i class="fas fa-check-double me-1"></i>0 Accomplished
+                    </span>
+                </div>
             </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        class QuantumTaskManager {
+        class QuantumTaskNexus {
             constructor() {
                 this.tasks = [];
                 this.initializeEventListeners();
@@ -251,7 +293,7 @@
             initializeEventListeners() {
                 const addTaskBtn = document.getElementById('addTaskBtn');
                 const taskInput = document.getElementById('taskInput');
-                const filterButtons = document.querySelectorAll('.task-filters button');
+                const filterButtons = document.querySelectorAll('.task-filters .btn');
 
                 addTaskBtn.addEventListener('click', () => this.addTask());
                 taskInput.addEventListener('keypress', (e) => {
@@ -276,8 +318,9 @@
                         id: Date.now(),
                         text: taskText,
                         completed: false,
-                        priority: 'low',
-                        createdAt: new Date().toISOString()
+                        priority: this.getRandomPriority(),
+                        createdAt: new Date().toISOString(),
+                        tags: this.generateTags(taskText)
                     };
 
                     this.tasks.push(task);
@@ -287,11 +330,58 @@
                 }
             }
 
-            // Rest of the methods remain similar to previous implementation
-            // (renderTasks, toggleComplete, deleteTask, filterTasks, saveTasks, loadTasks)
+            getRandomPriority() {
+                const priorities = ['low', 'medium', 'high'];
+                return priorities[Math.floor(Math.random() * priorities.length)];
+            }
+
+            generateTags(taskText) {
+                const potentialTags = ['urgent', 'important', 'personal', 'work', 'learning'];
+                return potentialTags.filter(() => Math.random() < 0.3);
+            }
+
+            renderTasks() {
+                const taskList = document.getElementById('taskList');
+                const totalTasksEl = document.getElementById('totalTasks');
+                const completedTasksEl = document.getElementById('completedTasks');
+
+                taskList.innerHTML = '';
+                
+                this.tasks.forEach(task => {
+                    const taskElement = document.createElement('div');
+                    taskElement.classList.add('task-item', `priority-${task.priority}`);
+                    taskElement.innerHTML = `
+                        <div class="task-content d-flex align-items-center">
+                            <span class="priority-badge priority-${task.priority}"></span>
+                            <span class="${task.completed ? 'text-muted text-decoration-line-through' : ''}">${task.text}</span>
+                        </div>
+                        <div class="task-actions">
+                            ${task.tags.map(tag => `<span class="badge bg-secondary me-1">${tag}</span>`).join('')}
+                            <button class="btn btn-sm complete-btn" onclick="quantumTaskNexus.toggleComplete(${task.id})">
+                                <i class="fas fa-check"></i>
+                            </button>
+                            <button class="btn btn-sm delete-btn" onclick="quantumTaskNexus.deleteTask(${task.id})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    `;
+
+                    taskList.appendChild(taskElement);
+                });
+
+                const totalTasks = this.tasks.length;
+                const completedTasks = this.tasks.filter(t => t.completed).length;
+
+                totalTasksEl.innerHTML = `<i class="fas fa-clipboard-list me-1"></i>${totalTasks} Missions`;
+                completedTasksEl.innerHTML = `<i class="fas fa-check-double me-1"></i>${completedTasks} Accomplished`;
+            }
+
+            // Remaining methods (toggleComplete, deleteTask, filterTasks, saveTasks, loadTasks) 
+            // would be similar to previous implementations
         }
 
-        const quantumTaskManager = new QuantumTaskManager();
+        const quantumTaskNexus = new QuantumTaskNexus();
     </script>
 </body>
 </html>
+
