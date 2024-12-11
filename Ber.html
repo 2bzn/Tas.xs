@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Intelligent Task Manager</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2ecc71;
+            --danger-color: #e74c3c;
+            --warning-color: #f39c12;
+            --dark-background: #2c3e50;
+        }
+
+        * {
+            transition: all 0.3s ease;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f6f8f9 0%, #e5ebee 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+
+        .task-manager-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+            padding: 40px;
+            max-width: 900px;
+            margin: 50px auto;
+        }
+
+        .task-input-group {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .task-input {
+            border-radius: 15px;
+            padding: 15px 60px 15px 20px;
+            font-size: 16px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .add-task-btn {
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .task-list {
+            max-height: 500px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+        }
+
+        .task-item {
+            background-color: #f9f9f9;
+            border-left: 6px solid;
+            margin-bottom: 15px;
+            padding: 15px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .task-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+        }
+
+        .task-actions button {
+            margin-left: 10px;
+            opacity: 0.7;
+        }
+
+        .task-actions button:hover {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        .priority-indicators {
+            display: flex;
+            gap: 5px;
+        }
+
+        .priority-badge {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .priority-low { background-color: #3498db; }
+        .priority-medium { background-color: #f39c12; }
+        .priority-high { background-color: #e74c3c; }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .task-item {
+            animation: slideIn 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container task-manager-container">
+        <div class="row">
+            <div class="col-12">
+                <h1 class="text-center mb-4">
+                    <i class="fas fa-tasks me-2"></i>Intelligent Task Manager
+                </h1>
+
+                <div class="task-input-group">
+                    <input 
+                        type="text" 
+                        id="taskInput" 
+                        class="form-control task-input" 
+                        placeholder="What needs to be done?"
+                        aria-label="New Task"
+                    >
+                    <button 
+                        id="addTaskBtn" 
+                        class="btn btn-primary add-task-btn" 
+                        aria-label="Add Task"
+                    >
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+
+                <div class="task-filters mb-3 text-center">
+                    <div class="btn-group" role="group">
+                        <button class="btn btn-outline-primary active" data-filter="all">
+                            <i class="fas fa-list me-1"></i>All
+                        </button>
+                        <button class="btn btn-outline-primary" data-filter="active">
+                            <i class="fas fa-running me-1"></i>Active
+                        </button>
+                        <button class="btn btn-outline-primary" data-filter="completed">
+                            <i class="fas fa-check-circle me-1"></i>Completed
+                        </button>
+                    </div>
+                </div>
+
+                <div id="taskList" class="task-list"></div>
+
+                <div class="task-stats text-center mt-3">
+                    <span id="totalTasks" class="me-3">
+                        <i class="fas fa-clipboard-list me-1"></i>0 Tasks
+                    </span>
+                    <span id="completedTasks">
+                        <i class="fas fa-check-double me-1"></i>0 Completed
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    class TaskManager {
+        constructor() {
+            this.tasks = [];
+            this.initializeEventListeners();
+            this.loadTasks();
+        }
+
+        initializeEventListeners() {
+            const addTaskBtn = document.getElementById('addTaskBtn');
+            const taskInput = document.getElementById('taskInput');
+            const filterButtons = document.querySelectorAll('.task-filters button');
+
+            addTaskBtn.addEventListener('click', () => this.addTask());
+            taskInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') this.addTask();
+            });
+
+            filterButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    filterButtons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    this.filterTasks(btn.dataset.filter);
+                });
+            });
+        }
+
+        addTask() {
+            const taskInput = document.getElementById('taskInput');
+            const taskText = taskInput.value.trim();
+
+            if (taskText) {
+                const task = {
+                    id: Date.now(),
+                    text: taskText,
+                    completed: false,
+                    priority: 'low',
+                    createdAt: new Date().toISOString()
+                };
+
+                this.tasks.push(task);
+                this.saveTasks();
+                this.renderTasks();
+                taskInput.value = '';
+            }
+        }
+
+        renderTasks() {
+            const taskList = document.getElementById('taskList');
+            const totalTasksEl = document.getElementById('totalTasks');
+            const completedTasksEl = document.getElementById('completedTasks');
+
+            taskList.innerHTML = '';
+            
+            this.tasks.forEach(task => {
+                const taskElement = document.createElement('div');
+                taskElement.classList.add('task-item', `priority-${task.priority}`);
+                taskElement.innerHTML = `
+                    <div class="task-content d-flex align-items-center">
+                        <div class="priority-indicators me-2">
+                            <span class="priority-badge priority-${task.priority}"></span>
+                        </div>
+                        <span class="${task.completed ? 'text-muted text-decoration-line-through' : ''}">${task.text}</span>
+                    </div>
+                    <div class="task-actions">
+                        <button class="btn btn-sm btn-outline-success complete-btn" onclick="taskManager.toggleComplete(${task.id})">
+                            <i class="fas fa-check"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger delete-btn" onclick="taskManager.deleteTask(${task.id})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+
+                taskList.appendChild(taskElement);
+            });
+
+            const totalTasks = this.tasks.length;
+            const completedTasks = this.tasks.filter(t => t.completed).length;
+
+            totalTasksEl.innerHTML = `<i class="fas fa-clipboard-list me-1"></i>${totalTasks} Tasks`;
+            completedTasksEl.innerHTML = `<i class="fas fa-check-double me-1"></i>${completedTasks} Completed`;
+        }
+
+        toggleComplete(taskId) {
+            const task = this.tasks.find(t => t.id === taskId);
+            if (task) {
+                task.completed = !task.completed;
+                this.saveTasks();
+                this.renderTasks();
+            }
+        }
+
+        deleteTask(taskId) {
+            this.tasks = this.tasks.filter(t => t.id !== taskId);
+            this.saveTasks();
+            this.renderTasks();
+        }
+
+        filterTasks(filter) {
+            const taskList = document.getElementById('taskList');
+            const taskItems = taskList.querySelectorAll('.task-item');
+
+            taskItems.forEach(item => {
+                const isCompleted = item.querySelector('.text-decoration-line-through');
+                
+                switch(filter) {
+                    case 'active':
+                        item.style.display = isCompleted ? 'none' : 'flex';
+                        break;
+                    case 'completed':
+                        item.style.display = isCompleted ? 'flex' : 'none';
+                        break;
+                    default:
+                        item.style.display = 'flex';
+                }
+            });
+        }
+
+        saveTasks() {
+            localStorage.setItem('intelligentTasks', JSON.stringify(this.tasks));
+        }
+
+        loadTasks() {
+            const savedTasks = localStorage.getItem('intelligentTasks');
+            if (savedTasks) {
+                this.tasks = JSON.parse(savedTasks);
+                this.renderTasks();
+            }
+        }
+    }
+
+    const taskManager = new TaskManager();
+    </script>
+</body>
+</html>
