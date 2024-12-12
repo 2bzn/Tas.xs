@@ -13,6 +13,7 @@
         }
         h1 {
             text-align: center;
+            color: #333;
         }
         ul {
             list-style-type: none;
@@ -27,6 +28,10 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            transition: background 0.3s;
+        }
+        li:hover {
+            background: #f0f0f0;
         }
         button {
             background: #e74c3c;
@@ -35,39 +40,77 @@
             padding: 5px 10px;
             border-radius: 5px;
             cursor: pointer;
+            transition: background 0.3s;
         }
         button:hover {
             background: #c0392b;
+        }
+        input[type="text"] {
+            padding: 10px;
+            margin-right: 5px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: calc(100% - 100px);
+        }
+        .task-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
         }
     </style>
 </head>
 <body>
 
     <h1>قائمة المهام</h1>
-    <ul id="task-list">
-        <li>مهمة 1 <button onclick="removeTask(this)">حذف</button></li>
-        <li>مهمة 2 <button onclick="removeTask(this)">حذف</button></li>
-        <li>مهمة 3 <button onclick="removeTask(this)">حذف</button></li>
-    </ul>
-
-    <input type="text" id="task-input" placeholder="أضف مهمة جديدة">
-    <button onclick="addTask()">إضافة مهمة</button>
+    <div class="task-container">
+        <input type="text" id="task-input" placeholder="أضف مهمة جديدة">
+        <button onclick="addTask()">إضافة مهمة</button>
+    </div>
+    <ul id="task-list"></ul>
 
     <script>
+        // Load tasks from local storage
+        document.addEventListener('DOMContentLoaded', loadTasks);
+
+        function loadTasks() {
+            const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+            tasks.forEach(task => {
+                addTaskToDOM(task);
+            });
+        }
+
         function addTask() {
             const taskInput = document.getElementById('task-input');
             const taskText = taskInput.value.trim();
             if (taskText) {
-                const li = document.createElement('li');
-                li.innerHTML = taskText + ' <button onclick="removeTask(this)">حذف</button>';
-                document.getElementById('task-list').appendChild(li);
+                addTaskToDOM(taskText);
+                saveTaskToLocalStorage(taskText);
                 taskInput.value = '';
             }
+        }
+
+        function addTaskToDOM(taskText) {
+            const li = document.createElement('li');
+            li.innerHTML = taskText + ' <button onclick="removeTask(this)">حذف</button>';
+            document.getElementById('task-list').appendChild(li);
+        }
+
+        function saveTaskToLocalStorage(taskText) {
+            const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+            tasks.push(taskText);
+            localStorage.setItem('tasks', JSON.stringify(tasks));
         }
 
         function removeTask(button) {
             const li = button.parentElement;
             li.remove();
+            removeTaskFromLocalStorage(li.firstChild.textContent.trim());
+        }
+
+        function removeTaskFromLocalStorage(taskText) {
+            const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+            const updatedTasks = tasks.filter(task => task !== taskText);
+            localStorage.setItem('tasks', JSON.stringify(updatedTasks));
         }
     </script>
 
