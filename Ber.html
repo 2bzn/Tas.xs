@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>قائمة المهام</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -12,6 +13,8 @@
             padding: 20px;
             max-width: 600px;
             margin: auto;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
         h1 {
             text-align: center;
@@ -56,12 +59,16 @@
             margin-right: 5px;
             border: 1px solid #ddd;
             border-radius: 5px;
-            width: calc(100% - 100px);
+            width: calc(100% - 110px);
         }
         .task-container {
             display: flex;
             justify-content: center;
             margin-bottom: 20px;
+        }
+        .edit-input {
+            display: none;
+            width: 70%;
         }
     </style>
 </head>
@@ -99,7 +106,10 @@
             li.className = completed ? 'completed' : '';
             li.innerHTML = `
                 <span onclick="toggleTask(this)">${taskText}</span>
-                <button onclick="removeTask(this)">حذف</button>
+                <div>
+                    <button onclick="editTask(this)">تعديل</button>
+                    <button onclick="removeTask(this)">حذف</button>
+                </div>
             `;
             document.getElementById('task-list').appendChild(li);
         }
@@ -111,10 +121,12 @@
         }
 
         function removeTask(button) {
-            const li = button.parentElement;
-            const taskText = li.firstChild.textContent.trim();
-            li.remove();
-            removeTaskFromLocalStorage(taskText);
+            if (confirm("هل أنت متأكد أنك تريد حذف هذه المهمة؟")) {
+                const li = button.parentElement.parentElement;
+                const taskText = li.firstChild.textContent.trim();
+                li.remove();
+                removeTaskFromLocalStorage(taskText);
+            }
         }
 
         function removeTaskFromLocalStorage(taskText) {
@@ -139,6 +151,41 @@
                 return task;
             });
             localStorage.setItem('tasks', JSON.stringify(tasks));
+        }
+
+        function editTask(button) {
+            const li = button.parentElement.parentElement;
+            const span = li.firstChild;
+            const taskText = span.textContent.trim();
+            const editInput = document.createElement('input');
+            editInput.type = 'text';
+            editInput.value = taskText;
+            editInput.className = 'edit-input';
+            li.insertBefore(editInput, span);
+            span.style.display = 'none';
+            button.textContent = 'حفظ';
+            button.setAttribute('onclick', 'saveEdit(this)');
+
+            editInput.addEventListener('keypress', function(event) {
+                if (event.key === 'Enter') {
+                    saveEdit(button);
+                }
+            });
+        }
+
+        function saveEdit(button) {
+            const li = button.parentElement.parentElement;
+            const editInput = li.querySelector('.edit-input');
+            const newTaskText = editInput.value.trim();
+            if (newTaskText) {
+                const span = li.firstChild;
+                span.textContent = newTaskText;
+                span.style.display = 'block';
+                editInput.remove();
+                button.textContent = 'تعديل';
+                button.setAttribute('onclick', 'editTask(this)');
+                updateTaskInLocalStorage(span.textContent, li.classList.contains('completed'));
+            }
         }
 
         function handleKeyPress(event) {
