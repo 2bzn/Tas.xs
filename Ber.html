@@ -1,316 +1,75 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar">
 <head>
     <meta charset="UTF-8">
-    <title>Quantum Task Nexus Pro</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>قائمة المهام</title>
     <style>
-        :root {
-            --quantum-dark: #121212;
-            --quantum-card: #1E1E1E;
-            --quantum-text: #E0E0E0;
-            --quantum-primary: #3498db;
-            --quantum-success: #2ecc71;
-            --quantum-danger: #e74c3c;
-        }
-
         body {
-            background: linear-gradient(135deg, var(--quantum-dark) 0%, #0a0a0a 100%);
-            color: var(--quantum-text);
-            font-family: 'Inter', sans-serif;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
         }
-
-        .quantum-container {
-            background: rgba(30, 30, 30, 0.9);
-            border-radius: 15px;
-            backdrop-filter: blur(15px);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
-            padding: 30px;
-            margin-top: 50px;
+        h1 {
+            text-align: center;
         }
-
-        .task-item {
-            background: rgba(40, 40, 40, 0.7);
-            border-radius: 10px;
-            margin-bottom: 10px;
-            padding: 15px;
-            transition: all 0.3s ease;
+        ul {
+            list-style-type: none;
+            padding: 0;
         }
-
-        .task-item:hover {
-            transform: scale(1.02);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        li {
+            background: #fff;
+            margin: 5px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        button {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #c0392b;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="quantum-container">
-            <h2 class="text-center mb-4">
-                <i class="fas fa-tasks me-2"></i>Quantum Task Nexus Pro
-            </h2>
 
-            <!-- Task Creation Form -->
-            <div class="row mb-3">
-                <div class="col-md-12">
-                    <form id="taskCreationForm">
-                        <div class="input-group">
-                            <input 
-                                type="text" 
-                                id="taskTitleInput" 
-                                class="form-control" 
-                                placeholder="Enter task title" 
-                                required
-                            >
-                            <select id="taskPrioritySelect" class="form-select" style="max-width: 150px;">
-                                <option value="LOW">Low Priority</option>
-                                <option value="MEDIUM">Medium Priority</option>
-                                <option value="HIGH">High Priority</option>
-                            </select>
-                            <input 
-                                type="date" 
-                                id="taskDueDateInput" 
-                                class="form-control" 
-                                style="max-width: 150px;"
-                            >
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-plus"></i> Create Task
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
+    <h1>قائمة المهام</h1>
+    <ul id="task-list">
+        <li>مهمة 1 <button onclick="removeTask(this)">حذف</button></li>
+        <li>مهمة 2 <button onclick="removeTask(this)">حذف</button></li>
+        <li>مهمة 3 <button onclick="removeTask(this)">حذف</button></li>
+    </ul>
 
-            <!-- Task Search and Filter -->
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <input 
-                        type="text" 
-                        id="taskSearchInput" 
-                        class="form-control" 
-                        placeholder="Search tasks..."
-                    >
-                </div>
-                <div class="col-md-6">
-                    <select id="taskStatusFilter" class="form-select">
-                        <option value="">All Statuses</option>
-                        <option value="PENDING">Pending</option>
-                        <option value="IN_PROGRESS">In Progress</option>
-                        <option value="COMPLETED">Completed</option>
-                    </select>
-                </div>
-            </div>
-
-            <!-- Task List -->
-            <div id="taskListContainer"></div>
-
-            <!-- Task Statistics -->
-            <div class="row mt-3">
-                <div class="col-md-4">
-                    <div class="card bg-dark text-white">
-                        <div class="card-body">
-                            <h5 class="card-title">Total Tasks</h5>
-                            <p id="totalTasksCount" class="card-text">0</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card bg-dark text-white">
-                        <div class="card-body">
-                            <h5 class="card-title">Completed Tasks</h5>
-                            <p id="completedTasksCount" class="card-text">0</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card bg-dark text-white">
-                        <div class="card-body">
-                            <h5 class="card-title">Productivity Score</h5>
-                            <p id="productivityScore" class="card-text">0%</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <input type="text" id="task-input" placeholder="أضف مهمة جديدة">
+    <button onclick="addTask()">إضافة مهمة</button>
 
     <script>
-        // Enum Definitions
-        const TaskStatus = {
-            PENDING: 'PENDING',
-            IN_PROGRESS: 'IN_PROGRESS',
-            COMPLETED: 'COMPLETED',
-            BLOCKED: 'BLOCKED'
-        };
-
-        const TaskPriority = {
-            LOW: 'LOW',
-            MEDIUM: 'MEDIUM',
-            HIGH: 'HIGH'
-        };
-
-        // Advanced Task Management System
-        class QuantumTaskManager {
-            constructor() {
-                this.tasks = [];
-                this.initializeEventListeners();
-                this.loadTasks();
-                this.renderTaskList();
-                this.updateStatistics();
-            }
-
-            // Event Listeners Setup
-            initializeEventListeners() {
-                const taskForm = document.getElementById('taskCreationForm');
-                const searchInput = document.getElementById('taskSearchInput');
-                const statusFilter = document.getElementById('taskStatusFilter');
-
-                taskForm.addEventListener('submit', this.handleTaskCreation.bind(this));
-                searchInput.addEventListener('input', this.handleTaskSearch.bind(this));
-                statusFilter.addEventListener('change', this.handleStatusFilter.bind(this));
-            }
-
-            // Task Creation Handler
-            handleTaskCreation(event) {
-                event.preventDefault();
-                
-                const titleInput = document.getElementById('taskTitleInput');
-                const prioritySelect = document.getElementById('taskPrioritySelect');
-                const dueDateInput = document.getElementById('taskDueDateInput');
-
-                try {
-                    const newTask = {
-                        id: this.generateUniqueId(),
-                        title: titleInput.value,
-                        priority: prioritySelect.value,
-                        dueDate: dueDateInput.value ? new Date(dueDateInput.value) : null,
-                        status: TaskStatus.PENDING,
-                        createdAt: new Date(),
-                        updatedAt: new Date()
-                    };
-
-                    this.tasks.push(newTask);
-                    this.saveTasks();
-                    this.renderTaskList();
-                    this.updateStatistics();
-
-                    // Reset form
-                    titleInput.value = '';
-                    prioritySelect.value = 'LOW';
-                    dueDateInput.value = '';
-
-                } catch (error) {
-                    this.showErrorNotification(error.message);
-                }
-            }
-
-            // Task Search Handler
-            handleTaskSearch(event) {
-                const searchTerm = event.target.value.toLowerCase();
-                const filteredTasks = this.tasks.filter(task => 
-                    task.title.toLowerCase().includes(searchTerm)
-                );
-                this.renderTaskList(filteredTasks);
-            }
-
-            // Status Filter Handler
-            handleStatusFilter(event) {
-                const status = event.target.value;
-                const filteredTasks = status 
-                    ? this.tasks.filter(task => task.status === status)
-                    : this.tasks;
-                this.renderTaskList(filteredTasks);
-            }
-
-            // Render Task List
-            renderTaskList(tasksToRender = this.tasks) {
-                const container = document.getElementById('taskListContainer');
-                container.innerHTML = '';
-
-                tasksToRender.forEach(task => {
-                    const taskElement = document.createElement('div');
-                    taskElement.classList.add('task-item', 'mb-2', 'p-3', 'rounded');
-                    
-                    // Dynamic priority coloring
-                    const priorityColor = {
-                        LOW: 'text-info',
-                        MEDIUM: 'text-warning',
-                        HIGH: 'text-danger'
-                    }[task.priority];
-
-                    taskElement.innerHTML = `
-                        <div class="d-flex justify-content-between align-items-center">
-                            <span class="${priorityColor}">${task.title}</span>
-                            <div class="btn-group">
-                                <button class="btn btn-sm btn-outline-success" onclick="taskManager.updateTaskStatus('${task.id}', 'COMPLETED')">
-                                    <i class="fas fa-check"></i>
-                                </button>
-                                <button class="btn btn-sm btn-outline-danger" onclick="taskManager.deleteTask('${task.id}')">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </div>
-                    `;
-
-                    container.appendChild(taskElement);
-                });
-            }
-
-            // Update Task Status
-            updateTaskStatus(taskId, newStatus) {
-                const task = this.tasks.find(t => t.id === taskId);
-                if (task) {
-                    task.status = newStatus;
-                    task.updatedAt = new Date();
-                    this.saveTasks();
-                    this.renderTaskList();
-                    this.updateStatistics();
-                }
-            }
-
-            // Delete Task
-            deleteTask(taskId) {
-                this.tasks = this.tasks.filter(task => task.id !== taskId);
-                this.saveTasks();
-                this.renderTaskList();
-                this.updateStatistics();
-            }
-
-            // Update Statistics
-            updateStatistics() {
-                const totalTasksCount = this.tasks.length;
-                const completedTasksCount = this.tasks.filter(task => task.status === TaskStatus.COMPLETED).length;
-                const productivityScore = totalTasksCount > 0 
-                    ? Math.round((completedTasksCount / totalTasksCount) * 100) 
-                    : 0;
-
-                document.getElementById('totalTasksCount').textContent = totalTasksCount;
-                document.getElementById('completedTasksCount').textContent = completedTasksCount;
-                document.getElementById('productivityScore').textContent = `${productivityScore}%`;
-            }
-
-            // Utility Methods
-            generateUniqueId() {
-                return Math.random().toString(36).substr(2, 9);
-            }
-
-            saveTasks() {
-                localStorage.setItem('quantumTasks', JSON.stringify(this.tasks));
-            }
-
-            loadTasks() {
-                const savedTasks = localStorage.getItem('quantumTasks');
-                this.tasks = savedTasks ? JSON.parse(savedTasks) : [];
-            }
-
-            showErrorNotification(message) {
-                alert(message); // Replace with a more sophisticated notification
+        function addTask() {
+            const taskInput = document.getElementById('task-input');
+            const taskText = taskInput.value.trim();
+            if (taskText) {
+                const li = document.createElement('li');
+                li.innerHTML = taskText + ' <button onclick="removeTask(this)">حذف</button>';
+                document.getElementById('task-list').appendChild(li);
+                taskInput.value = '';
             }
         }
 
-        // Initialize Task Manager
-        const taskManager = new QuantumTaskManager();
+        function removeTask(button) {
+            const li = button.parentElement;
+            li.remove();
+        }
     </script>
+
 </body>
 </html>
