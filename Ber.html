@@ -4,12 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quantum Task Nexus Pro</title>
-    <!-- Bootstrap CSS -->
+    <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <!-- Animate.css -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
     <style>
         :root {
             --quantum-dark: #121212;
@@ -59,96 +57,66 @@
             margin-right: 10px;
         }
 
-        .priority-low { background-color: #3498db; }
-        .priority-medium { background-color: #f39c12; }
-        .priority-high { background-color: #e74c3c; }
-
         .task-list {
             max-height: 500px;
             overflow-y: auto;
-        }
-
-        .task-timer {
-            background: rgba(50, 50, 50, 0.8);
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .pomodoro-btn {
-            margin: 0 5px;
-        }
-
-        .modal-dark {
-            background: var(--quantum-card);
-            color: var(--quantum-text);
-        }
-
-        .tag-input {
-            background: rgba(60, 60, 60, 0.7);
-            border: none;
-            color: var(--quantum-text);
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="quantum-container">
-            <h2 class="text-center mb-4 animate__animated animate__fadeIn">
+            <h2 class="text-center mb-4">
                 <i class="fas fa-brain me-2"></i>Quantum Task Nexus Pro
             </h2>
 
-            <!-- Pomodoro Timer -->
-            <div class="task-timer mb-4">
-                <h4 id="timerDisplay">25:00</h4>
-                <div class="d-flex justify-content-center">
-                    <button id="startTimer" class="btn btn-success pomodoro-btn">
-                        <i class="fas fa-play"></i> Start
-                    </button>
-                    <button id="pauseTimer" class="btn btn-warning pomodoro-btn">
-                        <i class="fas fa-pause"></i> Pause
-                    </button>
-                    <button id="resetTimer" class="btn btn-danger pomodoro-btn">
-                        <i class="fas fa-redo"></i> Reset
-                    </button>
+            <!-- Task Input Section -->
+            <div class="row mb-3">
+                <div class="col-md-8">
+                    <div class="input-group">
+                        <input 
+                            type="text" 
+                            id="taskInput" 
+                            class="form-control" 
+                            placeholder="Enter a new task" 
+                            maxlength="200"
+                        >
+                        <select id="prioritySelect" class="form-select" style="max-width: 150px;">
+                            <option value="low">Low Priority</option>
+                            <option value="medium">Medium Priority</option>
+                            <option value="high">High Priority</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <input 
+                            type="date" 
+                            id="dueDateInput" 
+                            class="form-control"
+                        >
+                        <button 
+                            id="addTaskBtn" 
+                            class="btn btn-primary" 
+                            type="button"
+                        >
+                            <i class="fas fa-plus"></i> Add Task
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            <!-- Task Input -->
-            <div class="input-group mb-3">
-                <input 
-                    type="text" 
-                    id="taskInput" 
-                    class="form-control" 
-                    placeholder="Enter a new mission..." 
-                    maxlength="150"
-                >
-                <select id="prioritySelect" class="form-select" style="max-width: 150px;">
-                    <option value="low">Low Priority</option>
-                    <option value="medium">Medium Priority</option>
-                    <option value="high">High Priority</option>
-                </select>
-                <button 
-                    id="addTaskBtn" 
-                    class="btn btn-primary" 
-                    type="button"
-                >
-                    <i class="fas fa-plus"></i>
-                </button>
-            </div>
-
-            <!-- Advanced Filtering -->
+            <!-- Filtering and Search -->
             <div class="row mb-3">
                 <div class="col-md-6">
                     <div class="btn-group" role="group">
-                        <button type="button" class="btn btn-outline-light active" data-filter="all">
-                            All Missions
+                        <button type="button" class="btn btn-outline-light active filter-btn" data-filter="all">
+                            All Tasks
                         </button>
-                        <button type="button" class="btn btn-outline-light" data-filter="active">
+                        <button type="button" class="btn btn-outline-light filter-btn" data-filter="active">
                             Active
                         </button>
-                        <button type="button" class="btn btn-outline-light" data-filter="completed">
+                        <button type="button" class="btn btn-outline-light filter-btn" data-filter="completed">
                             Completed
                         </button>
                     </div>
@@ -158,7 +126,7 @@
                         type="text" 
                         id="searchInput" 
                         class="form-control" 
-                        placeholder="🔍 Search missions..."
+                        placeholder="🔍 Search tasks..."
                     >
                 </div>
             </div>
@@ -166,114 +134,189 @@
             <!-- Task List -->
             <div id="taskList" class="task-list"></div>
 
-            <!-- Task Stats -->
-            <div class="task-stats mt-3 d-flex justify-content-between">
-                <span id="totalTasks" class="text-light">
-                    <i class="fas fa-clipboard-list me-1"></i>0 Missions
-                </span>
-                <span id="completedTasks" class="text-light">
-                    <i class="fas fa-check-double me-1"></i>0 Accomplished
-                </span>
+            <!-- Task Statistics -->
+            <div class="row mt-3">
+                <div class="col-md-4">
+                    <div class="card bg-dark text-white">
+                        <div class="card-body">
+                            <h5 class="card-title">Total Tasks</h5>
+                            <p id="totalTasksCount" class="card-text">0</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-dark text-white">
+                        <div class="card-body">
+                            <h5 class="card-title">Completed Tasks</h5>
+                            <p id="completedTasksCount" class="card-text">0</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-dark text-white">
+                        <div class="card-body">
+                            <h5 class="card-title">Pending Tasks</h5>
+                            <p id="pendingTasksCount" class="card-text">0</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Task Details Modal -->
-    <div class="modal fade" id="taskDetailsModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content modal-dark">
-                <div class="modal-header">
-                    <h5 class="modal-title">Task Details</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body" id="taskDetailsContent">
-                    <!-- Dynamic content will be inserted here -->
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        class QuantumTaskNexus {
-            constructor() {
-                this.tasks = [];
-                this.pomodoroTimer = {
-                    duration: 25 * 60, // 25 minutes
-                    remaining: 25 * 60,
-                    isRunning: false,
-                    interval: null
-                };
-                this.initializeEventListeners();
-                this.loadTasks();
-                this.initializePomodoroTimer();
-            }
-
-            initializePomodoroTimer() {
-                const timerDisplay = document.getElementById('timerDisplay');
-                const startBtn = document.getElementById('startTimer');
-                const pauseBtn = document.getElementById('pauseTimer');
-                const resetBtn = document.getElementById('resetTimer');
-
-                startBtn.addEventListener('click', () => this.startPomodoroTimer());
-                pauseBtn.addEventListener('click', () => this.pausePomodoroTimer());
-                resetBtn.addEventListener('click', () => this.resetPomodoroTimer());
-
-                this.updateTimerDisplay();
-            }
-
-            startPomodoroTimer() {
-                if (!this.pomodoroTimer.isRunning) {
-                    this.pomodoroTimer.isRunning = true;
-                    this.pomodoroTimer.interval = setInterval(() => {
-                        this.pomodoroTimer.remaining--;
-                        this.updateTimerDisplay();
-
-                        if (this.pomodoroTimer.remaining <= 0) {
-                            this.resetPomodoroTimer();
-                            this.showNotification('Pomodoro Complete!', 'Time for a break!');
-                        }
-                    }, 1000);
-                }
-            }
-
-            pausePomodoroTimer() {
-                if (this.pomodoroTimer.isRunning) {
-                    clearInterval(this.pomodoroTimer.interval);
-                    this.pomodoroTimer.isRunning = false;
-                }
-            }
-
-            resetPomodoroTimer() {
-                clearInterval(this.pomodoroTimer.interval);
-                this.pomodoroTimer.remaining = this.pomodoroTimer.duration;
-                this.pomodoroTimer.isRunning = false;
-                this.updateTimerDisplay();
-            }
-
-            updateTimerDisplay() {
-                const timerDisplay = document.getElementById('timerDisplay');
-                const minutes = Math.floor(this.pomodoroTimer.remaining / 60);
-                const seconds = this.pomodoroTimer.remaining % 60;
-                timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-            }
-
-            showNotification(title, body) {
-                if ('Notification' in window) {
-                    Notification.requestPermission().then(permission => {
-                        if (permission === 'granted') {
-                            new Notification(title, { body });
-                        }
-                    });
-                }
-            }
-
-            // Rest of the existing methods...
-            // (Include all previous methods from the previous implementation)
+    class QuantumTaskManager {
+        constructor() {
+            this.tasks = [];
+            this.initializeEventListeners();
+            this.loadTasksFromLocalStorage();
         }
 
-        // Create global instance
-        const quantumTaskNexus = new QuantumTaskNexus();
+        initializeEventListeners() {
+            const addTaskBtn = document.getElementById('addTaskBtn');
+            const taskInput = document.getElementById('taskInput');
+            const searchInput = document.getElementById('searchInput');
+            const filterButtons = document.querySelectorAll('.filter-btn');
+
+            // Add Task Event
+            addTaskBtn.addEventListener('click', () => this.addTask());
+            taskInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') this.addTask();
+            });
+
+            // Search Event
+            searchInput.addEventListener('input', () => this.filterTasks());
+
+            // Filter Events
+            filterButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    filterButtons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    this.filterTasks();
+                });
+            });
+        }
+
+        addTask() {
+            const taskInput = document.getElementById('taskInput');
+            const prioritySelect = document.getElementById('prioritySelect');
+            const dueDateInput = document.getElementById('dueDateInput');
+
+            const taskText = taskInput.value.trim();
+            if (!taskText) return;
+
+            const task = {
+                id: Date.now(),
+                text: taskText,
+                priority: prioritySelect.value,
+                dueDate: dueDateInput.value,
+                completed: false,
+                createdAt: new Date().toISOString(),
+                tags: this.generateTags(taskText)
+            };
+
+            this.tasks.push(task);
+            this.saveTasksToLocalStorage();
+            this.renderTasks();
+            this.resetInputFields();
+        }
+
+        renderTasks() {
+            const taskList = document.getElementById('taskList');
+            const searchInput = document.getElementById('searchInput');
+            const activeFilter = document.querySelector('.filter-btn.active').dataset.filter;
+            const searchTerm = searchInput.value.toLowerCase();
+
+            taskList.innerHTML = '';
+
+            const filteredTasks = this.tasks.filter(task => {
+                const matchesSearch = task.text.toLowerCase().includes(searchTerm);
+                const matchesFilter = 
+                    activeFilter === 'all' || 
+                    (activeFilter === 'active' && !task.completed) || 
+                    (activeFilter === 'completed' && task.completed);
+                
+                return matchesSearch && matchesFilter;
+            });
+
+            filteredTasks.forEach(task => {
+                const taskElement = document.createElement('div');
+                taskElement.classList.add('task-item', `priority-${task.priority}`);
+                taskElement.innerHTML = `
+                    <div class="d-flex align-items-center">
+                        <span class="priority-badge priority-${task.priority}"></span>
+                        <span class="${task.completed ? 'text-muted text-decoration-line-through' : ''}">${task.text}</span>
+                    </div>
+                    <div class="task-actions">
+                        <button class="btn btn-sm btn-success complete-btn" onclick="quantumTaskManager.toggleTaskCompletion(${task.id})">
+                            <i class="fas fa-check"></i>
+                        </button>
+                        <button class="btn btn-sm btn-danger delete-btn" onclick="quantumTaskManager.deleteTask(${task.id})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                taskList.appendChild(taskElement);
+            });
+
+            this.updateTaskStatistics();
+        }
+
+        toggleTaskCompletion(taskId) {
+            const task = this.tasks.find(t => t.id === taskId);
+            if (task) {
+                task.completed = !task.completed;
+                this.saveTasksToLocalStorage();
+                this.renderTasks();
+            }
+        }
+
+        deleteTask(taskId) {
+            this.tasks = this.tasks.filter(task => task.id !== taskId);
+            this.saveTasksToLocalStorage();
+            this.renderTasks();
+        }
+
+        updateTaskStatistics() {
+            const totalTasksCount = document.getElementById('totalTasksCount');
+            const completedTasksCount = document.getElementById('completedTasksCount');
+            const pendingTasksCount = document.getElementById('pendingTasksCount');
+
+            const totalTasks = this.tasks.length;
+            const completedTasks = this.tasks.filter(task => task.completed).length;
+            const pendingTasks = totalTasks - completedTasks;
+
+            totalTasksCount.textContent = totalTasks;
+            completedTasksCount.textContent = completedTasks;
+            pendingTasksCount.textContent = pendingTasks;
+        }
+
+        saveTasksToLocalStorage() {
+            localStorage.setItem('quantumTasks', JSON.stringify(this.tasks));
+        }
+
+        loadTasksFromLocalStorage() {
+            const savedTasks = localStorage.getItem('quantumTasks');
+            if (savedTasks) {
+                this.tasks = JSON.parse(savedTasks);
+                this.renderTasks();
+            }
+        }
+
+        resetInputFields() {
+            document.getElementById('taskInput').value = '';
+            document.getElementById('prioritySelect').selectedIndex = 0;
+            document.getElementById('dueDateInput').value = '';
+        }
+
+        generateTags(taskText) {
+            const potentialTags = ['urgent', 'important', 'personal', 'work'];
+            return potentialTags.filter(() => Math.random() < 0.3);
+        }
+    }
+
+    // Global instance
+    const quantumTaskManager = new QuantumTaskNexus();
     </script>
 </body>
 </html>
