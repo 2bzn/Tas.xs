@@ -2,137 +2,309 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Task Manager</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantum Task Nexus</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
+        :root {
+            --dark-bg: #121212;
+            --dark-card: #1E1E1E;
+            --text-primary: #E0E0E0;
+            --accent-blue: #3498db;
+            --accent-green: #2ecc71;
+            --accent-red: #e74c3c;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f4f4f4;
+            background: linear-gradient(135deg, var(--dark-bg) 0%, #0a0a0a 100%);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            padding-top: 50px;
         }
-        #taskInput {
-            width: 70%;
-            padding: 10px;
-            margin-right: 10px;
+
+        .quantum-container {
+            background: rgba(30, 30, 30, 0.8);
+            border-radius: 15px;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+            padding: 30px;
         }
-        #taskList {
-            list-style-type: none;
-            padding: 0;
-        }
+
         .task-item {
-            background-color: white;
-            margin: 10px 0;
-            padding: 10px;
+            background: rgba(40, 40, 40, 0.7);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            padding: 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
         }
-        .completed {
-            text-decoration: line-through;
-            color: gray;
+
+        .task-item:hover {
+            transform: translateX(5px);
+            background: rgba(50, 50, 50, 0.8);
         }
+
+        .priority-badge {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .priority-low { background-color: #3498db; }
+        .priority-medium { background-color: #f39c12; }
+        .priority-high { background-color: #e74c3c; }
+
+        .task-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .complete-btn {
+            color: var(--accent-green);
+            margin-right: 10px;
+        }
+
         .delete-btn {
-            background-color: red;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            cursor: pointer;
+            color: var(--accent-red);
         }
     </style>
 </head>
 <body>
-    <h1>Task Manager</h1>
-    
-    <div>
-        <input type="text" id="taskInput" placeholder="Enter a new task">
-        <button onclick="addTask()">Add Task</button>
+    <div class="container">
+        <div class="quantum-container">
+            <h2 class="text-center mb-4">
+                <i class="fas fa-tasks me-2"></i>Quantum Task Nexus
+            </h2>
+
+            <div class="input-group mb-3">
+                <input 
+                    type="text" 
+                    id="taskInput" 
+                    class="form-control" 
+                    placeholder="Enter a new mission..." 
+                    aria-label="Task input"
+                    maxlength="150"
+                >
+                <button 
+                    id="addTaskBtn" 
+                    class="btn btn-primary" 
+                    type="button"
+                >
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
+
+            <div class="task-filters btn-group mb-3" role="group">
+                <button 
+                    type="button" 
+                    class="btn btn-outline-light active" 
+                    data-filter="all"
+                >
+                    All Missions
+                </button>
+                <button 
+                    type="button" 
+                    class="btn btn-outline-light" 
+                    data-filter="active"
+                >
+                    Active
+                </button>
+                <button 
+                    type="button" 
+                    class="btn btn-outline-light" 
+                    data-filter="completed"
+                >
+                    Completed
+                </button>
+            </div>
+
+            <div id="taskList" class="task-list"></div>
+
+            <div class="task-stats mt-3 d-flex justify-content-between">
+                <span id="totalTasks" class="text-light">
+                    <i class="fas fa-clipboard-list me-1"></i>0 Missions
+                </span>
+                <span id="completedTasks" class="text-light">
+                    <i class="fas fa-check-double me-1"></i>0 Accomplished
+                </span>
+            </div>
+        </div>
     </div>
-    
-    <ul id="taskList"></ul>
 
     <script>
-        // Load tasks from localStorage on page load
-        document.addEventListener('DOMContentLoaded', loadTasks);
+        class QuantumTaskNexus {
+            constructor() {
+                this.tasks = [];
+                this.initializeEventListeners();
+                this.loadTasks();
+            }
 
-        function addTask() {
-            const taskInput = document.getElementById('taskInput');
-            const taskText = taskInput.value.trim();
+            initializeEventListeners() {
+                const addTaskBtn = document.getElementById('addTaskBtn');
+                const taskInput = document.getElementById('taskInput');
+                const filterButtons = document.querySelectorAll('.task-filters .btn');
 
-            if (taskText) {
-                // Create task object
-                const task = {
-                    id: Date.now(),
-                    text: taskText,
-                    completed: false
-                };
+                addTaskBtn.addEventListener('click', () => this.addTask());
+                taskInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') this.addTask();
+                });
 
-                // Add task to list
-                renderTask(task);
+                filterButtons.forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        filterButtons.forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        this.filterTasks(btn.dataset.filter);
+                    });
+                });
+            }
 
-                // Save to localStorage
-                saveTask(task);
+            addTask() {
+                const taskInput = document.getElementById('taskInput');
+                const taskText = taskInput.value.trim();
 
-                // Clear input
-                taskInput.value = '';
+                if (taskText) {
+                    const task = {
+                        id: Date.now(),
+                        text: taskText,
+                        completed: false,
+                        priority: this.getRandomPriority(),
+                        createdAt: new Date().toISOString(),
+                        tags: this.generateTags(taskText)
+                    };
+
+                    this.tasks.push(task);
+                    this.saveTasks();
+                    this.renderTasks();
+                    taskInput.value = '';
+                }
+            }
+
+            saveTasks() {
+                localStorage.setItem('quantumTasks', JSON.stringify(this.tasks));
+            }
+
+            loadTasks() {
+                const savedTasks = localStorage.getItem('quantumTasks');
+                if (savedTasks) {
+                    this.tasks = JSON.parse(savedTasks);
+                    this.renderTasks();
+                }
+            }
+
+            toggleComplete(taskId) {
+                const task = this.tasks.find(t => t.id === taskId);
+                if (task) {
+                    task.completed = !task.completed;
+                    this.saveTasks();
+                    this.renderTasks();
+                }
+            }
+
+            deleteTask(taskId) {
+                this.tasks = this.tasks.filter(t => t.id !== taskId);
+                this.saveTasks();
+                this.renderTasks();
+            }
+
+            filterTasks(filter) {
+                const taskList = document.getElementById('taskList');
+                taskList.innerHTML = '';
+
+                let filteredTasks = this.tasks;
+                switch(filter) {
+                    case 'active':
+                        filteredTasks = this.tasks.filter(t => !t.completed);
+                        break;
+                    case 'completed':
+                        filteredTasks = this.tasks.filter(t => t.completed);
+                        break;
+                }
+
+                filteredTasks.forEach(task => {
+                    const taskElement = document.createElement('div');
+                    taskElement.classList.add('task-item', `priority-${task.priority}`);
+                    taskElement.innerHTML = `
+                        <div class="task-content d-flex align-items-center">
+                            <span class="priority-badge priority-${task.priority}"></span>
+                            <span class="${task.completed ? 'text-muted text-decoration-line-through' : ''}">${task.text}</span>
+                        </div>
+                        <div class="task-actions">
+                            ${task.tags.map(tag => `<span class="badge bg-secondary me-1">${tag}</span>`).join('')}
+                            <button class="btn btn-sm complete-btn" onclick="quantumTaskNexus.toggleComplete(${task.id})">
+                                <i class="fas fa-check"></i>
+                            </button>
+                            <button class="btn btn-sm delete-btn" onclick="quantumTaskNexus.deleteTask(${task.id})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    `;
+
+                    taskList.appendChild(taskElement);
+                });
+
+                this.updateTaskStats(filteredTasks);
+            }
+
+            updateTaskStats(tasks) {
+                const totalTasksEl = document.getElementById('totalTasks');
+                const completedTasksEl = document.getElementById('completedTasks');
+
+                const totalTasks = tasks.length;
+                const completedTasks = tasks.filter(t => t.completed).length;
+
+                totalTasksEl.innerHTML = `<i class="fas fa-clipboard-list me-1"></i>${totalTasks} Missions`;
+                completedTasksEl.innerHTML = `<i class="fas fa-check-double me-1"></i>${completedTasks} Accomplished`;
+            }
+
+            renderTasks() {
+                const taskList = document.getElementById('taskList');
+                taskList.innerHTML = '';
+                
+                this.tasks.forEach(task => {
+                    const taskElement = document.createElement('div');
+                    taskElement.classList.add('task-item', `priority-${task.priority}`);
+                    taskElement.innerHTML = `
+                        <div class="task-content d-flex align-items-center">
+                            <span class="priority-badge priority-${task.priority}"></span>
+                            <span class="${task.completed ? 'text-muted text-decoration-line-through' : ''}">${task.text}</span>
+                        </div>
+                        <div class="task-actions">
+                            ${task.tags.map(tag => `<span class="badge bg-secondary me-1">${tag}</span>`).join('')}
+                            <button class="btn btn-sm complete-btn" onclick="quantumTaskNexus.toggleComplete(${task.id})">
+                                <i class="fas fa-check"></i>
+                            </button>
+                            <button class="btn btn-sm delete-btn" onclick="quantumTaskNexus.deleteTask(${task.id})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    `;
+
+                    taskList.appendChild(taskElement);
+                });
+
+                this.updateTaskStats(this.tasks);
+            }
+
+            getRandomPriority() {
+                const priorities = ['low', 'medium', 'high'];
+                return priorities[Math.floor(Math.random() * priorities.length)];
+            }
+
+            generateTags(taskText) {
+                const potentialTags = ['urgent', 'important', 'personal', 'work', 'learning'];
+                return potentialTags.filter(() => Math.random() < 0.3);
             }
         }
 
-        function renderTask(task) {
-            const taskList = document.getElementById('taskList');
-            const li = document.createElement('li');
-            li.className = 'task-item';
-            li.id = `task-${task.id}`;
-            
-            li.innerHTML = `
-                <span class="${task.completed ? 'completed' : ''}" 
-                      onclick="toggleComplete(${task.id})">
-                    ${task.text}
-                </span>
-                <button class="delete-btn" onclick="deleteTask(${task.id})">Delete</button>
-            `;
-
-            taskList.appendChild(li);
-        }
-
-        function saveTask(task) {
-            let tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
-            tasks.push(task);
-            localStorage.setItem('tasks', JSON.stringify(tasks));
-        }
-
-        function loadTasks() {
-            const tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
-            tasks.forEach(renderTask);
-        }
-
-        function toggleComplete(taskId) {
-            let tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
-            const taskIndex = tasks.findIndex(t => t.id === taskId);
-            
-            if (taskIndex !== -1) {
-                tasks[taskIndex].completed = !tasks[taskIndex].completed;
-                localStorage.setItem('tasks', JSON.stringify(tasks));
-
-                const taskElement = document.getElementById(`task-${taskId}`);
-                const textSpan = taskElement.querySelector('span');
-                textSpan.classList.toggle('completed');
-            }
-        }
-
-        function deleteTask(taskId) {
-            // Remove from DOM
-            const taskElement = document.getElementById(`task-${taskId}`);
-            taskElement.remove();
-
-            // Remove from localStorage
-            let tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
-            tasks = tasks.filter(t => t.id !== taskId);
-            localStorage.setItem('tasks', JSON.stringify(tasks));
-        }
+        // Ensure the instance is created globally
+        const quantumTaskNexus = new QuantumTaskNexus();
     </script>
 </body>
 </html>
-
-
