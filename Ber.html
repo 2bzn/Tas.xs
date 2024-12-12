@@ -10,6 +10,8 @@
             background-color: #f4f4f4;
             margin: 0;
             padding: 20px;
+            max-width: 600px;
+            margin: auto;
         }
         h1 {
             text-align: center;
@@ -29,6 +31,10 @@
             justify-content: space-between;
             align-items: center;
             transition: background 0.3s;
+        }
+        li.completed {
+            text-decoration: line-through;
+            color: #888;
         }
         li:hover {
             background: #f0f0f0;
@@ -63,19 +69,18 @@
 
     <h1>قائمة المهام</h1>
     <div class="task-container">
-        <input type="text" id="task-input" placeholder="أضف مهمة جديدة">
+        <input type="text" id="task-input" placeholder="أضف مهمة جديدة" onkeypress="handleKeyPress(event)">
         <button onclick="addTask()">إضافة مهمة</button>
     </div>
     <ul id="task-list"></ul>
 
     <script>
-        // Load tasks from local storage
         document.addEventListener('DOMContentLoaded', loadTasks);
 
         function loadTasks() {
             const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
             tasks.forEach(task => {
-                addTaskToDOM(task);
+                addTaskToDOM(task.text, task.completed);
             });
         }
 
@@ -83,34 +88,63 @@
             const taskInput = document.getElementById('task-input');
             const taskText = taskInput.value.trim();
             if (taskText) {
-                addTaskToDOM(taskText);
-                saveTaskToLocalStorage(taskText);
+                addTaskToDOM(taskText, false);
+                saveTaskToLocalStorage(taskText, false);
                 taskInput.value = '';
             }
         }
 
-        function addTaskToDOM(taskText) {
+        function addTaskToDOM(taskText, completed) {
             const li = document.createElement('li');
-            li.innerHTML = taskText + ' <button onclick="removeTask(this)">حذف</button>';
+            li.className = completed ? 'completed' : '';
+            li.innerHTML = `
+                <span onclick="toggleTask(this)">${taskText}</span>
+                <button onclick="removeTask(this)">حذف</button>
+            `;
             document.getElementById('task-list').appendChild(li);
         }
 
-        function saveTaskToLocalStorage(taskText) {
+        function saveTaskToLocalStorage(taskText, completed) {
             const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
-            tasks.push(taskText);
+            tasks.push({ text: taskText, completed: completed });
             localStorage.setItem('tasks', JSON.stringify(tasks));
         }
 
         function removeTask(button) {
             const li = button.parentElement;
+            const taskText = li.firstChild.textContent.trim();
             li.remove();
-            removeTaskFromLocalStorage(li.firstChild.textContent.trim());
+            removeTaskFromLocalStorage(taskText);
         }
 
         function removeTaskFromLocalStorage(taskText) {
-            const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
-            const updatedTasks = tasks.filter(task => task !== taskText);
-            localStorage.setItem('tasks', JSON.stringify(updatedTasks));
+            let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+            tasks = tasks.filter(task => task.text !== taskText);
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+        }
+
+        function toggleTask(span) {
+            const li = span.parentElement;
+            const taskText = span.textContent.trim();
+            const completed = li.classList.toggle('completed');
+            updateTaskInLocalStorage(taskText, completed);
+        }
+
+        function updateTaskInLocalStorage(taskText, completed) {
+            let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+            tasks = tasks.map(task => {
+                if (task.text === taskText) {
+                    task.completed = completed;
+                }
+                return task;
+            });
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                addTask();
+            }
         }
     </script>
 
