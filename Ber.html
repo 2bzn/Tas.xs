@@ -3,10 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quantum Task Nexus Pro</title>
-    <!-- Bootstrap 5 -->
+    <title>Quantum Task Nexus</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -21,8 +19,9 @@
         body {
             background: linear-gradient(135deg, var(--quantum-dark) 0%, #0a0a0a 100%);
             color: var(--quantum-text);
-            font-family: 'Inter', sans-serif;
+            font-family: 'Arial', sans-serif;
             min-height: 100vh;
+            padding-top: 50px;
         }
 
         .quantum-container {
@@ -31,7 +30,6 @@
             backdrop-filter: blur(15px);
             box-shadow: 0 15px 35px rgba(0,0,0,0.4);
             padding: 30px;
-            margin-top: 50px;
         }
 
         .task-item {
@@ -57,6 +55,10 @@
             margin-right: 10px;
         }
 
+        .priority-low { background-color: #3498db; }
+        .priority-medium { background-color: #f39c12; }
+        .priority-high { background-color: #e74c3c; }
+
         .task-list {
             max-height: 500px;
             overflow-y: auto;
@@ -67,12 +69,12 @@
     <div class="container">
         <div class="quantum-container">
             <h2 class="text-center mb-4">
-                <i class="fas fa-brain me-2"></i>Quantum Task Nexus Pro
+                <i class="fas fa-brain me-2"></i>Quantum Task Nexus
             </h2>
 
             <!-- Task Input Section -->
             <div class="row mb-3">
-                <div class="col-md-8">
+                <div class="col-md-12">
                     <div class="input-group">
                         <input 
                             type="text" 
@@ -86,14 +88,11 @@
                             <option value="medium">Medium Priority</option>
                             <option value="high">High Priority</option>
                         </select>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="input-group">
                         <input 
                             type="date" 
                             id="dueDateInput" 
-                            class="form-control"
+                            class="form-control" 
+                            style="max-width: 150px;"
                         >
                         <button 
                             id="addTaskBtn" 
@@ -165,69 +164,67 @@
     </div>
 
     <script>
-    class QuantumTaskManager {
+    class TaskManager {
         constructor() {
             this.tasks = [];
-            this.initializeEventListeners();
-            this.loadTasksFromLocalStorage();
+            this.initializeDOM();
+            this.loadTasks();
+            this.renderTasks();
         }
 
-        initializeEventListeners() {
-            const addTaskBtn = document.getElementById('addTaskBtn');
-            const taskInput = document.getElementById('taskInput');
-            const searchInput = document.getElementById('searchInput');
-            const filterButtons = document.querySelectorAll('.filter-btn');
+        initializeDOM() {
+            this.taskInput = document.getElementById('taskInput');
+            this.prioritySelect = document.getElementById('prioritySelect');
+            this.dueDateInput = document.getElementById('dueDateInput');
+            this.addTaskBtn = document.getElementById('addTaskBtn');
+            this.searchInput = document.getElementById('searchInput');
+            this.taskList = document.getElementById('taskList');
+            this.filterButtons = document.querySelectorAll('.filter-btn');
+            
+            this.addEventListeners();
+        }
 
-            // Add Task Event
-            addTaskBtn.addEventListener('click', () => this.addTask());
-            taskInput.addEventListener('keypress', (e) => {
+        addEventListeners() {
+            this.addTaskBtn.addEventListener('click', () => this.addTask());
+            this.taskInput.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') this.addTask();
             });
 
-            // Search Event
-            searchInput.addEventListener('input', () => this.filterTasks());
+            this.searchInput.addEventListener('input', () => this.renderTasks());
 
-            // Filter Events
-            filterButtons.forEach(btn => {
+            this.filterButtons.forEach(btn => {
                 btn.addEventListener('click', () => {
-                    filterButtons.forEach(b => b.classList.remove('active'));
+                    this.filterButtons.forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
-                    this.filterTasks();
+                    this.renderTasks();
                 });
             });
         }
 
         addTask() {
-            const taskInput = document.getElementById('taskInput');
-            const prioritySelect = document.getElementById('prioritySelect');
-            const dueDateInput = document.getElementById('dueDateInput');
-
-            const taskText = taskInput.value.trim();
+            const taskText = this.taskInput.value.trim();
             if (!taskText) return;
 
             const task = {
                 id: Date.now(),
                 text: taskText,
-                priority: prioritySelect.value,
-                dueDate: dueDateInput.value,
+                priority: this.prioritySelect.value,
+                dueDate: this.dueDateInput.value,
                 completed: false,
-                createdAt: new Date().toISOString(),
-                tags: this.generateTags(taskText)
+                createdAt: new Date().toISOString()
             };
 
             this.tasks.push(task);
-            this.saveTasksToLocalStorage();
+            this.saveTasks();
             this.renderTasks();
-            this.resetInputFields();
+            this.resetInputs();
         }
 
         renderTasks() {
-            const taskList = document.getElementById('taskList');
-            const searchInput = document.getElementById('searchInput');
+            this.taskList.innerHTML = '';
+            
             const activeFilter = document.querySelector('.filter-btn.active').dataset.filter;
-            const searchTerm = searchInput.value.toLowerCase();
-
-            taskList.innerHTML = '';
+            const searchTerm = this.searchInput.value.toLowerCase();
 
             const filteredTasks = this.tasks.filter(task => {
                 const matchesSearch = task.text.toLowerCase().includes(searchTerm);
@@ -248,75 +245,79 @@
                         <span class="${task.completed ? 'text-muted text-decoration-line-through' : ''}">${task.text}</span>
                     </div>
                     <div class="task-actions">
-                        <button class="btn btn-sm btn-success complete-btn" onclick="quantumTaskManager.toggleTaskCompletion(${task.id})">
+                        <button class="btn btn-sm btn-success me-2 toggle-btn" data-id="${task.id}">
                             <i class="fas fa-check"></i>
                         </button>
-                        <button class="btn btn-sm btn-danger delete-btn" onclick="quantumTaskManager.deleteTask(${task.id})">
+                        <button class="btn btn-sm btn-danger delete-btn" data-id="${task.id}">
                             <i class="fas fa-trash"></i>
                         </button>
                     </div>
                 `;
-                taskList.appendChild(taskElement);
+                
+                this.taskList.appendChild(taskElement);
             });
 
-            this.updateTaskStatistics();
+            this.attachTaskActions();
+            this.updateStatistics();
         }
 
-        toggleTaskCompletion(taskId) {
-            const task = this.tasks.find(t => t.id === taskId);
-            if (task) {
-                task.completed = !task.completed;
-                this.saveTasksToLocalStorage();
-                this.renderTasks();
-            }
+        attachTaskActions() {
+            // Toggle Completion
+            this.taskList.querySelectorAll('.toggle-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const taskId = parseInt(e.currentTarget.dataset.id);
+                    const task = this.tasks.find(t => t.id === taskId);
+                    if (task) {
+                        task.completed = !task.completed;
+                        this.saveTasks();
+                        this.renderTasks();
+                    }
+                });
+            });
+
+            // Delete Task
+            this.taskList.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const taskId = parseInt(e.currentTarget.dataset.id);
+                    this.tasks = this.tasks.filter(t => t.id !== taskId);
+                    this.saveTasks();
+                    this.renderTasks();
+                });
+            });
         }
 
-        deleteTask(taskId) {
-            this.tasks = this.tasks.filter(task => task.id !== taskId);
-            this.saveTasksToLocalStorage();
-            this.renderTasks();
-        }
-
-        updateTaskStatistics() {
-            const totalTasksCount = document.getElementById('totalTasksCount');
-            const completedTasksCount = document.getElementById('completedTasksCount');
-            const pendingTasksCount = document.getElementById('pendingTasksCount');
-
+        updateStatistics() {
             const totalTasks = this.tasks.length;
-            const completedTasks = this.tasks.filter(task => task.completed).length;
+            const completedTasks = this.tasks.filter(t => t.completed).length;
             const pendingTasks = totalTasks - completedTasks;
 
-            totalTasksCount.textContent = totalTasks;
-            completedTasksCount.textContent = completedTasks;
-            pendingTasksCount.textContent = pendingTasks;
+            document.getElementById('totalTasksCount').textContent = totalTasks;
+            document.getElementById('completedTasksCount').textContent = completedTasks;
+            document.getElementById('pendingTasksCount').textContent = pendingTasks;
         }
 
-        saveTasksToLocalStorage() {
+        resetInputs() {
+            this.taskInput.value = '';
+            this.prioritySelect.selectedIndex = 0;
+            this.dueDateInput.value = '';
+        }
+
+        saveTasks() {
             localStorage.setItem('quantumTasks', JSON.stringify(this.tasks));
         }
 
-        loadTasksFromLocalStorage() {
+        loadTasks() {
             const savedTasks = localStorage.getItem('quantumTasks');
             if (savedTasks) {
                 this.tasks = JSON.parse(savedTasks);
-                this.renderTasks();
             }
-        }
-
-        resetInputFields() {
-            document.getElementById('taskInput').value = '';
-            document.getElementById('prioritySelect').selectedIndex = 0;
-            document.getElementById('dueDateInput').value = '';
-        }
-
-        generateTags(taskText) {
-            const potentialTags = ['urgent', 'important', 'personal', 'work'];
-            return potentialTags.filter(() => Math.random() < 0.3);
         }
     }
 
-    // Global instance
-    const quantumTaskManager = new QuantumTaskNexus();
+    // Initialize the Task Manager when the DOM is fully loaded
+    document.addEventListener('DOMContentLoaded', () => {
+        new TaskManager();
+    });
     </script>
 </body>
 </html>
