@@ -20,6 +20,30 @@
             text-align: center;
             color: #333;
         }
+        .task-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        input[type="text"] {
+            padding: 10px;
+            margin-right: 5px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: calc(100% - 110px);
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #0056b3;
+        }
         ul {
             list-style-type: none;
             padding: 0;
@@ -42,33 +66,17 @@
         li:hover {
             background: #f0f0f0;
         }
-        button {
-            background: #e74c3c;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background 0.3s;
+        .edit-input {
+            display: none;
+            width: 70%;
         }
-        button:hover {
-            background: #c0392b;
-        }
-        input[type="text"] {
-            padding: 10px;
-            margin-right: 5px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            width: calc(100% - 110px);
-        }
-        .task-container {
+        .sort-buttons {
             display: flex;
             justify-content: center;
             margin-bottom: 20px;
         }
-        .edit-input {
-            display: none;
-            width: 70%;
+        .sort-buttons button {
+            margin: 0 5px;
         }
     </style>
 </head>
@@ -78,6 +86,11 @@
     <div class="task-container">
         <input type="text" id="task-input" placeholder="أضف مهمة جديدة" onkeypress="handleKeyPress(event)">
         <button onclick="addTask()">إضافة مهمة</button>
+    </div>
+    <div class="sort-buttons">
+        <button onclick="sortTasks('all')">عرض الكل</button>
+        <button onclick="sortTasks('completed')">عرض المكتملة</button>
+        <button onclick="sortTasks('incomplete')">عرض غير المكتملة</button>
     </div>
     <ul id="task-list"></ul>
 
@@ -192,6 +205,23 @@
             if (event.key === 'Enter') {
                 addTask();
             }
+        }
+
+        function sortTasks(filter) {
+            const taskList = document.getElementById('task-list');
+            const tasks = Array.from(taskList.children);
+            taskList.innerHTML = ''; // Clear the current list
+
+            let filteredTasks;
+            if (filter === 'completed') {
+                filteredTasks = tasks.filter(task => task.classList.contains('completed'));
+            } else if (filter === 'incomplete') {
+                filteredTasks = tasks.filter(task => !task.classList.contains('completed'));
+            } else {
+                filteredTasks = tasks; // Show all tasks
+            }
+
+            filteredTasks.forEach(task => taskList.appendChild(task));
         }
     </script>
 
