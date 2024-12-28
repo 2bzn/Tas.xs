@@ -1,229 +1,360 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>قائمة المهام</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <title>عبدالعزيز | مطور برمجيات</title>
+    
+    <!-- SEO and Performance Optimizations -->
+    <meta name="description" content="مطور برمجيات متخصص في حلول التكنولوجيا المتقدمة">
+    <meta name="keywords" content="مطور برمجيات, تطوير ويب, مبرمج, مهندس برمجيات">
+    <meta name="author" content="عبدالعزيز">
+    
+    <!-- Open Graph and Social Media -->
+    <meta property="og:title" content="عبدالعزيز | مطور برمجيات">
+    <meta property="og:description" content="محفظة أعمال وخبرات عبدالعزيز في مجال البرمجة">
+    <meta property="og:type" content="website">
+    
+    <!-- Preload and Performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    
+    <!-- Stylesheets -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+        :root {
+            /* Color Palette */
+            --primary-color: #3498db;
+            --secondary-color: #2ecc71;
+            --background-dark: #1e1e2e;
+            --text-light: #ffffff;
+            --text-muted: #a0a0a0;
+            
+            /* Typography */
+            --font-primary: 'Cairo', sans-serif;
+        }
+
+        * {
             margin: 0;
-            padding: 20px;
-            max-width: 600px;
-            margin: auto;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            text-align: center;
-            color: #333;
-        }
-        .task-container {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
-        input[type="text"] {
-            padding: 10px;
-            margin-right: 5px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            width: calc(100% - 110px);
-        }
-        button {
-            background: #007bff;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-        button:hover {
-            background: #0056b3;
-        }
-        ul {
-            list-style-type: none;
             padding: 0;
+            box-sizing: border-box;
+            scroll-behavior: smooth;
         }
-        li {
-            background: #fff;
-            margin: 5px 0;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+
+        body {
+            font-family: var(--font-primary);
+            background: linear-gradient(135deg, var(--background-dark), #2c3e50);
+            color: var(--text-light);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(30, 30, 46, 0.9);
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            padding: 15px 5%;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            transition: background 0.3s;
+            transition: all 0.3s ease;
         }
-        li.completed {
-            text-decoration: line-through;
-            color: #888;
+
+        .navbar-brand {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            text-decoration: none;
         }
-        li:hover {
-            background: #f0f0f0;
+
+        .navbar-menu {
+            display: flex;
+            list-style: none;
+            gap: 30px;
         }
-        .edit-input {
-            display: none;
-            width: 70%;
+
+        .navbar-menu li a {
+            color: var(--text-light);
+            text-decoration: none;
+            position: relative;
+            transition: color 0.3s ease;
         }
-        .sort-buttons {
+
+        .navbar-menu li a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background-color: var(--primary-color);
+            transition: width 0.3s ease;
+        }
+
+        .navbar-menu li a:hover {
+            color: var(--primary-color);
+        }
+
+        .navbar-menu li a:hover::after {
+            width: 100%;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: linear-gradient(45deg, rgba(0, 0, 0, 0.8), rgba(30, 30, 44, 0.9));
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            padding: 0 20px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            color: var(--text-light);
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            color: var(--text-muted);
+            margin-bottom: 30px;
+        }
+
+        .hero-cta {
             display: flex;
             justify-content: center;
-            margin-bottom: 20px;
+            gap: 20px;
         }
-        .sort-buttons button {
-            margin: 0 5px;
+
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: var(--text-light);
+        }
+
+        .btn-secondary {
+            border: 2px solid var(--primary-color);
+            color: var(--text-light);
+        }
+
+        /* Skills Section */
+        .skills {
+            background: rgba(30, 30, 44, 0.7);
+            padding: 80px 5%;
+        }
+
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .skill-card {
+            background: rgba(18, 18, 18, 0.6);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            transition: transform 0.4s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .skill-card:hover {
+            transform: translateY(-15px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Projects Section */
+        .projects {
+            background: rgba(40, 40, 60, 0.7);
+            padding: 80px 5%;
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .project-card {
+            background: rgba(30, 30, 50, 0.8);
+            border-radius: 15px;
+            overflow: hidden;
+            transition: transform 0.4s ease;
+        }
+
+        .project-card:hover {
+            transform: scale(1.05);
+        }
+
+        .project-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+        }
+
+        .project-info {
+            padding: 20px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .navbar-menu {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .hero-title {
+                font-size: 2.5rem;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
 <body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="#" class="navbar-brand">عبدالعزيز</a>
+        <ul class="navbar-menu">
+            <li><a href="#home">الرئيسية</a></li>
+            <li><a href="#about">من أنا</a></li>
+            <li><a href="#skills">المهارات</a></li>
+            <li><a href="#projects">المشاريع</a></li>
+            <li><a href="#contact">التواصل</a></li>
+        </ul>
+    </nav>
 
-    <h1>قائمة المهام</h1>
-    <div class="task-container">
-        <input type="text" id="task-input" placeholder="أضف مهمة جديدة" onkeypress="handleKeyPress(event)">
-        <button onclick="addTask()">إضافة مهمة</button>
-    </div>
-    <div class="sort-buttons">
-        <button onclick="sortTasks('all')">عرض الكل</button>
-        <button onclick="sortTasks('completed')">عرض المكتملة</button>
-        <button onclick="sortTasks('incomplete')">عرض غير المكتملة</button>
-    </div>
-    <ul id="task-list"></ul>
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">مرحبًا، أنا عبدالعزيز</h1>
+            <p class="hero-subtitle">مطور برمجيات متخصص في حلول التكنولوجيا المتقدمة</p>
+            <div class="hero-cta">
+                <a href="#" class="btn btn-primary">
+                    <i class="fas fa-download"></i> السيرة الذاتية
+                </a>
+                <a href="#contact" class="btn btn-secondary">
+                    <i class="fas fa-envelope"></i> تواصل معي
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section id="skills" class="skills">
+        <div class="container">
+            <h2 class="section-title text-center mb-5">مهاراتي التقنية</h2>
+            <div class="skills-grid">
+                <div class="skill-card">
+                    <i class="fas fa-code fa-3x mb-3 text-primary"></i>
+                    <h3 class="mb-3">تطوير الويب</h3>
+                    <p>خبرة متقدمة في تطوير تطبيقات الويب التفاعلية</p>
+                </div>
+                <div class="skill-card">
+                    <i class="fas fa-mobile-alt fa-3x mb-3 text-primary"></i>
+                    <h3 class="mb-3">تطوير التطبيقات</h3>
+                    <p>تصميم وتطوير تطبيقات الهاتف المحمول</p>
+                </div>
+                <div class="skill-card">
+                    <i class="fas fa-database fa-3x mb-3 text-primary"></i>
+                    <h3 class="mb-3">إدارة قواعد البيانات</h3>
+                    <p>حلول متكاملة لتخزين وإدارة البيانات</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="projects">
+        <div class="container">
+            <h2 class="section-title text-center mb-5">مشاريعي</h2>
+            <div class="projects-grid">
+                <div class="project-card">
+                    <img src="project1.jpg" alt="مشروع 1" class="project-image">
+                    <div class="project-info">
+                        <h3>مشروع تطبيق الويب</h3>
+                        <p>تطبيق ويب متكامل باستخدام أحدث التقنيات</p>
+                        <a href="#" class="btn btn-primary mt-3">عرض المشروع</a>
+                    </div>
+                </div>
+                <div class="project-card">
+                    <img src="project2.jpg" alt="مشروع 2" class="project-image">
+                    <div class="project-info">
+                        <h3>تطبيق الهاتف المحمول</h3>
+                        <p>تطبيق محمول مبتكر لحل مشكلة معينة</p>
+                        <a href="#" class="btn btn-primary mt-3">عرض المشروع</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <script>
-        document.addEventListener('DOMContentLoaded', loadTasks);
-
-        function loadTasks() {
-            const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
-            tasks.forEach(task => {
-                addTaskToDOM(task.text, task.completed);
+        // Smooth Scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
             });
-        }
+        });
 
-        function addTask() {
-            const taskInput = document.getElementById('task-input');
-            const taskText = taskInput.value.trim();
-            if (taskText) {
-                addTaskToDOM(taskText, false);
-                saveTaskToLocalStorage(taskText, false);
-                taskInput.value = '';
-            }
-        }
+        // Active Navigation
+        const sections = document.querySelectorAll('section');
+        const navLinks = document.querySelectorAll('.navbar-menu a');
 
-        function addTaskToDOM(taskText, completed) {
-            const li = document.createElement('li');
-            li.className = completed ? 'completed' : '';
-            li.innerHTML = `
-                <span onclick="toggleTask(this)">${taskText}</span>
-                <div>
-                    <button onclick="editTask(this)">تعديل</button>
-                    <button onclick="removeTask(this)">حذف</button>
-                </div>
-            `;
-            document.getElementById('task-list').appendChild(li);
-        }
-
-        function saveTaskToLocalStorage(taskText, completed) {
-            const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
-            tasks.push({ text: taskText, completed: completed });
-            localStorage.setItem('tasks', JSON.stringify(tasks));
-        }
-
-        function removeTask(button) {
-            if (confirm("هل أنت متأكد أنك تريد حذف هذه المهمة؟")) {
-                const li = button.parentElement.parentElement;
-                const taskText = li.firstChild.textContent.trim();
-                li.remove();
-                removeTaskFromLocalStorage(taskText);
-            }
-        }
-
-        function removeTaskFromLocalStorage(taskText) {
-            let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
-            tasks = tasks.filter(task => task.text !== taskText);
-            localStorage.setItem('tasks', JSON.stringify(tasks));
-        }
-
-        function toggleTask(span) {
-            const li = span.parentElement;
-            const taskText = span.textContent.trim();
-            const completed = li.classList.toggle('completed');
-            updateTaskInLocalStorage(taskText, completed);
-        }
-
-        function updateTaskInLocalStorage(taskText, completed) {
-            let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
-            tasks = tasks.map(task => {
-                if (task.text === taskText) {
-                    task.completed = completed;
-                }
-                return task;
-            });
-            localStorage.setItem('tasks', JSON.stringify(tasks));
-        }
-
-        function editTask(button) {
-            const li = button.parentElement.parentElement;
-            const span = li.firstChild;
-            const taskText = span.textContent.trim();
-            const editInput = document.createElement('input');
-            editInput.type = 'text';
-            editInput.value = taskText;
-            editInput.className = 'edit-input';
-            li.insertBefore(editInput, span);
-            span.style.display = 'none';
-            button.textContent = 'حفظ';
-            button.setAttribute('onclick', 'saveEdit(this)');
-
-            editInput.addEventListener('keypress', function(event) {
-                if (event.key === 'Enter') {
-                    saveEdit(button);
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (pageYOffset >= sectionTop - sectionHeight / 3) {
+                    current = section.getAttribute('id');
                 }
             });
-        }
 
-        function saveEdit(button) {
-            const li = button.parentElement.parentElement;
-            const editInput = li.querySelector('.edit-input');
-            const newTaskText = editInput.value.trim();
-            if (newTaskText) {
-                const span = li.firstChild;
-                span.textContent = newTaskText;
-                span.style.display = 'block';
-                editInput.remove();
-                button.textContent = 'تعديل';
-                button.setAttribute('onclick', 'editTask(this)');
-                updateTaskInLocalStorage(span.textContent, li.classList.contains('completed'));
-            }
-        }
-
-        function handleKeyPress(event) {
-            if (event.key === 'Enter') {
-                addTask();
-            }
-        }
-
-        function sortTasks(filter) {
-            const taskList = document.getElementById('task-list');
-            const tasks = Array.from(taskList.children);
-            taskList.innerHTML = ''; // Clear the current list
-
-            let filteredTasks;
-            if (filter === 'completed') {
-                filteredTasks = tasks.filter(task => task.classList.contains('completed'));
-            } else if (filter === 'incomplete') {
-                filteredTasks = tasks.filter(task => !task.classList.contains('completed'));
-            } else {
-                filteredTasks = tasks; // Show all tasks
-            }
-
-            filteredTasks.forEach(task => taskList.appendChild(task));
-        }
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').slice(1) === current) {
+                    link.classList.add('active');
+                }
+            });
+        });
     </script>
-
 </body>
 </html>
