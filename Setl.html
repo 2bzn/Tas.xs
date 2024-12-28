@@ -5,19 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>عبدالعزيز | مطور برمجيات</title>
     
-    <!-- SEO and Performance Optimizations -->
+    <!-- SEO and Performance -->
     <meta name="description" content="مطور برمجيات متخصص في حلول التكنولوجيا المتقدمة">
     <meta name="keywords" content="مطور برمجيات, تطوير ويب, مبرمج, مهندس برمجيات">
-    <meta name="author" content="عبدالعزيز">
     
-    <!-- Open Graph and Social Media -->
-    <meta property="og:title" content="عبدالعزيز | مطور برمجيات">
-    <meta property="og:description" content="محفظة أعمال وخبرات عبدالعزيز في مجال البرمجة">
-    <meta property="og:type" content="website">
-    
-    <!-- Preload and Performance -->
+    <!-- Preload Resources -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700&display=swap" as="style">
     
     <!-- Stylesheets -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700&display=swap" rel="stylesheet">
@@ -30,6 +24,7 @@
             --secondary-color: #2ecc71;
             --background-dark: #1e1e2e;
             --text-light: #ffffff;
+            --text-dark: #333;
             --text-muted: #a0a0a0;
             
             /* Typography */
@@ -49,6 +44,25 @@
             color: var(--text-light);
             line-height: 1.6;
             overflow-x: hidden;
+        }
+
+        /* Shared Styles */
+        .section {
+            padding: 80px 5%;
+            position: relative;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 50px;
+            font-size: 2.5rem;
+            color: var(--primary-color);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
         }
 
         /* Navigation */
@@ -87,23 +101,8 @@
             transition: color 0.3s ease;
         }
 
-        .navbar-menu li a::after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 2px;
-            bottom: -5px;
-            left: 0;
-            background-color: var(--primary-color);
-            transition: width 0.3s ease;
-        }
-
         .navbar-menu li a:hover {
             color: var(--primary-color);
-        }
-
-        .navbar-menu li a:hover::after {
-            width: 100%;
         }
 
         /* Hero Section */
@@ -137,12 +136,6 @@
             margin-bottom: 30px;
         }
 
-        .hero-cta {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-        }
-
         .btn {
             display: inline-block;
             padding: 12px 30px;
@@ -150,6 +143,7 @@
             text-decoration: none;
             font-weight: bold;
             transition: all 0.3s ease;
+            margin: 10px;
         }
 
         .btn-primary {
@@ -159,15 +153,33 @@
 
         .btn-secondary {
             border: 2px solid var(--primary-color);
-            color: var(--text-light);
+            color: var(--primary-color);
+        }
+
+        /* About Section */
+        .about {
+            background: rgba(40, 40, 60, 0.7);
+        }
+
+        .about-content {
+            display: flex;
+            align-items: center;
+            gap: 50px;
+        }
+
+        .about-image {
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid var(--primary-color);
+        }
+
+        .about-text {
+            flex: 1;
         }
 
         /* Skills Section */
-        .skills {
-            background: rgba(30, 30, 44, 0.7);
-            padding: 80px 5%;
-        }
-
         .skills-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -175,73 +187,77 @@
         }
 
         .skill-card {
-            background: rgba(18, 18, 18, 0.6);
+            background: rgba(30, 30, 50, 0.8);
             border-radius: 15px;
             padding: 30px;
             text-align: center;
             transition: transform 0.4s ease;
-            backdrop-filter: blur(10px);
         }
 
         .skill-card:hover {
             transform: translateY(-15px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
         }
 
-        /* Projects Section */
-        .projects {
-            background: rgba(40, 40, 60, 0.7);
-            padding: 80px 5%;
+        /* Contact Section */
+        .contact {
+            background: rgba(50, 50, 70, 0.7);
         }
 
-        .projects-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
+        .contact-form {
+            max-width: 600px;
+            margin: 0 auto;
         }
 
-        .project-card {
-            background: rgba(30, 30, 50, 0.8);
-            border-radius: 15px;
-            overflow: hidden;
-            transition: transform 0.4s ease;
+        .form-group {
+            margin-bottom: 20px;
         }
 
-        .project-card:hover {
-            transform: scale(1.05);
-        }
-
-        .project-image {
+        .form-control {
             width: 100%;
-            height: 250px;
-            object-fit: cover;
+            padding: 12px;
+            border: 1px solid var(--text-muted);
+            border-radius: 5px;
+            background: rgba(30, 30, 50, 0.8);
+            color: var(--text-light);
         }
 
-        .project-info {
-            padding: 20px;
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .contact-info {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .social-link {
+            color: var(--text-light);
+            font-size: 1.5rem;
+            transition: color 0.3s ease;
+        }
+
+        .social-link:hover {
+            color: var(--primary-color);
         }
 
         /* Responsive Design */
         @media (max-width: 768px) {
-            .navbar {
+            .about-content {
                 flex-direction: column;
-                gap: 20px;
+                text-align: center;
             }
 
             .navbar-menu {
-                flex-direction: column;
-                align-items: center;
+                display: none; /* Consider adding a mobile menu */
             }
-
-            .hero-title {
-                font-size: 2.5rem;
-            }
-        }
-
-        /* Animations */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
@@ -250,8 +266,8 @@
     <nav class="navbar">
         <a href="#" class="navbar-brand">عبدالعزيز</a>
         <ul class="navbar-menu">
-            <li><a href="#home">الرئيسية</a></li>
-            <li><a href="#about">من أنا</a></li>
+            <li>a href="#home">الرئيسية</a>li>
+            <li>a href="#about">من أنا</a></li>
             <li><a href="#skills">المهارات</a></li>
             <li><a href="#projects">المشاريع</a></li>
             <li><a href="#contact">التواصل</a></li>
@@ -263,7 +279,7 @@
         <div class="hero-content">
             <h1 class="hero-title">مرحبًا، أنا عبدالعزيز</h1>
             <p class="hero-subtitle">مطور برمجيات متخصص في حلول التكنولوجيا المتقدمة</p>
-            <div class="hero-cta">
+            <div>
                 <a href="#" class="btn btn-primary">
                     <i class="fas fa-download"></i> السيرة الذاتية
                 </a>
@@ -274,56 +290,70 @@
         </div>
     </section>
 
-    <!-- Skills Section -->
-    <section id="skills" class="skills">
+    <!-- About Section -->
+    <section id="about" class="section about">
         <div class="container">
-            <h2 class="section-title text-center mb-5">مهاراتي التقنية</h2>
-            <div class="skills-grid">
-                <div class="skill-card">
-                    <i class="fas fa-code fa-3x mb-3 text-primary"></i>
-                    <h3 class="mb-3">تطوير الويب</h3>
-                    <p>خبرة متقدمة في تطوير تطبيقات الويب التفاعلية</p>
-                </div>
-                <div class="skill-card">
-                    <i class="fas fa-mobile-alt fa-3x mb-3 text-primary"></i>
-                    <h3 class="mb-3">تطوير التطبيقات</h3>
-                    <p>تصميم وتطوير تطبيقات الهاتف المحمول</p>
-                </div>
-                <div class="skill-card">
-                    <i class="fas fa-database fa-3x mb-3 text-primary"></i>
-                    <h3 class="mb-3">إدارة قواعد البيانات</h3>
-                    <p>حلول متكاملة لتخزين وإدارة البيانات</p>
+            <h2 class="section-title">من أنا</h2>
+            <div class="about-content">
+                <img src="profile.jpg" alt="عبدالعزيز" class="about-image">
+                <div class="about-text">
+                    <h3>مرحبًا بك في عالمي</h3>
+                    <p>
+                        أنا مطور برمجيات شغوف بخلق حلول تقنية مبتكرة. لدي خبرة تزيد عن 5 سنوات في 
+                        مجال تطوير البرمجيات والويب. أؤمن بأن التكنولوجيا يمكنها إحداث تغيير إيجابي 
+                        في العالم من خلال الحلول الذكية والمبسطة.
+                    </p>
+                    <p>
+                        أتخصص في تطوير تطبيقات الويب والموبايل، مع التركيز على تجربة المستخدم 
+                        وتصميم واجهات سهلة الاستخدام وجذابة.
+                    </p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Projects Section -->
-    <section id="projects" class="projects">
+    <!-- Contact Section -->
+    <section id="contact" class="section contact">
         <div class="container">
-            <h2 class="section-title text-center mb-5">مشاريعي</h2>
-            <div class="projects-grid">
-                <div class="project-card">
-                    <img src="project1.jpg" alt="مشروع 1" class="project-image">
-                    <div class="project-info">
-                        <h3>مشروع تطبيق الويب</h3>
-                        <p>تطبيق ويب متكامل باستخدام أحدث التقنيات</p>
-                        <a href="#" class="btn btn-primary mt-3">عرض المشروع</a>
-                    </div>
+            <h2 class="section-title">تواصل معي</h2>
+            <form class="contact-form" id="contactForm">
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="الاسم" required>
                 </div>
-                <div class="project-card">
-                    <img src="project2.jpg" alt="مشروع 2" class="project-image">
-                    <div class="project-info">
-                        <h3>تطبيق الهاتف المحمول</h3>
-                        <p>تطبيق محمول مبتكر لحل مشكلة معينة</p>
-                        <a href="#" class="btn btn-primary mt-3">عرض المشروع</a>
-                    </div>
+                <div class="form-group">
+                    <input type="email" class="form-control" placeholder="البريد الإلكتروني" required>
+                </div>
+                <div class="form-group">
+                    <textarea class="form-control" rows="5" placeholder="رسالتك" required></textarea>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary w-100">إرسال الرسالة</button>
+                </div>
+            </form>
+
+            <div class="contact-info">
+                <h3>معلومات التواصل</h3>
+                <p>البريد الإلكتروني: example@email.com</p>
+                <p>رقم الهاتف: +966 55 123 4567</p>
+                
+                <div class="social-links">
+                    <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-linkedin"></i>a>
+                    <a href="#" class="social-link"><i class="fab fa-github"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
                 </div>
             </div>
         </div>
     </section>
 
     <script>
+        // Form Submission Handler
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('شكرًا لتواصلك! سنرد عليك قريبًا.');
+            this.reset();
+        });
+
         // Smooth Scrolling
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
@@ -331,28 +361,6 @@
                 document.querySelector(this.getAttribute('href')).scrollIntoView({
                     behavior: 'smooth'
                 });
-            });
-        });
-
-        // Active Navigation
-        const sections = document.querySelectorAll('section');
-        const navLinks = document.querySelectorAll('.navbar-menu a');
-
-        window.addEventListener('scroll', () => {
-            let current = '';
-            sections.forEach(section => {
-                const sectionTop = section.offsetTop;
-                const sectionHeight = section.clientHeight;
-                if (pageYOffset >= sectionTop - sectionHeight / 3) {
-                    current = section.getAttribute('id');
-                }
-            });
-
-            navLinks.forEach(link => {
-                link.classList.remove('active');
-                if (link.getAttribute('href').slice(1) === current) {
-                    link.classList.add('active');
-                }
             });
         });
     </script>
